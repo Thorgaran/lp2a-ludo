@@ -1,38 +1,74 @@
 package ludoGame;
 import java.awt.Color;
+import java.util.ArrayList;
 
 public class Square {
-	private int index;
-	private Token token; //null if empty
-	private SquareTypes type;
-	private Color colour; //white if blank
+	private Square nextSquare;
+	private Square forkNextSquare = null;
+	private Color color; // This color represents the quadrant the square is in
+	private ArrayList<Token> tokens = new ArrayList<Token>(); // List of tokens starts out as empty
+	private SquareType type;
 	
-	public int getIndex() {
-		return this.index;
+	private int row;
+	private int col;
+	
+	Square(Square nextSquare, SquareType t, Color c, int row, int col) {
+		this.nextSquare = nextSquare;
+		this.type = t;
+		this.color = c;
+		this.row = row;
+		this.col = col;
+		
+		// If the square is a fork, create the home row
+		if (t == SquareType.Fork) {
+			this.forkNextSquare = new Square(c, 5, 0, 0);
+		}
 	}
 	
-	public void setToken(Token temp) {
-		this.token = temp;
-	}
-	public Token getToken() {
-		return this.token;
+	Square(Color c, int homeSquaresLeft, int row, int col) {
+		this.color = c;
+		this.type = SquareType.Home;
+		
+		if (homeSquaresLeft > 0) {
+			this.nextSquare = new Square(c, homeSquaresLeft - 1, row, col);
+		}
+		else {
+			this.nextSquare = new Square(null, SquareType.Home, c, row, col);
+		}
 	}
 	
-	public SquareTypes getType() {
+	Square() {
+		System.out.println("Incorrect square initialization!");
+	}
+	
+	public Square getNextSquare() {
+		return this.nextSquare;
+	}
+	
+	protected void setNextSquare(Square nextSquare) {
+		this.nextSquare = nextSquare;
+	}
+	
+	public void addToken(Token token) {
+		this.tokens.add(token);
+	}
+	public ArrayList<Token> getTokens() {
+		return this.tokens;
+	}
+	
+	public SquareType getType() {
 		return this.type;
 	}
 	
-	public Color getColour() {
-		return this.colour;
+	public Color getColor() {
+		return this.color;
 	}
 	
-	Square (int i, SquareTypes t,Color c){
-		this.index = i;
-		this.token = null;
-		this.type=t;
-		this.colour=c;
+	public int getRow() {
+		return this.row;
 	}
-	Square(){
-		System.out.println("Incorrect square initialization!");
+	
+	public int getCol() {
+		return this.col;
 	}
 }
