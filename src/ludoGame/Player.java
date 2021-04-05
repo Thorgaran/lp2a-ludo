@@ -19,4 +19,8 @@ public class Player {
 	public Square getStartSquare() {
 		return this.start;
 	}
+	
+	public Color getColor() {
+		return this.color;
+	}
 }

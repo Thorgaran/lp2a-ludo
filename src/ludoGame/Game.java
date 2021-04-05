@@ -127,6 +127,49 @@ public class Game {
 		} 
 	}
 	
+	public Square moveForward(Square ogPosition, int movNb,Token t) { //tatakae, tatakae
+		Square toReturn = ogPosition;
+		
+		if (toReturn.getType()==SquareType.Home) { 
+			//we check if the token is still trying to get out of its home
+			
+			if (movNb==6) {
+				toReturn = toReturn.getNextSquare();
+			} else {
+				toReturn = null;
+			}
+		
+		} else {
+			//the token is already in play
+			
+			for (int i=0;i < movNb; i++) {
+				
+				if (toReturn.getType()==SquareType.Fork && toReturn.getColor()==t.getPlayer().getColor()) {
+					//case diverges if we are entering the goal row
+					toReturn = ((ForkSquare)toReturn).getHomeSquare();
+				} else {
+					toReturn = toReturn.getNextSquare();
+				}
+				
+				/*if (toReturn.getTokens().isEmpty()!=true && condition bloquante) {
+				 * 	if (i!=movNb-1){
+				 * 		return null;
+				 * 	} else {
+				 * 		empilage des pions a definir
+				 * 	}
+				 * }*/
+				
+				/*el*/if (toReturn.getType()==SquareType.Goal) {
+					return toReturn; //we break the for instantly because the token reached the end
+				}
+			
+			}
+		
+		}
+		
+		return toReturn;
+	}
+	
 	public static void main(String[] args) {
 		Game game = new Game();
 		
