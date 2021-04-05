@@ -7,12 +7,9 @@ public class Dice {
 		this.number = 0;
 	}
 	
-	public int getNumber() {
-		return this.number;
-	}
-	
-	public void roll() {
+	public int roll() {
 		this.number = (int) (1 + (Math.random() * (6 - 1)));
+		return this.number;
 	}
 	
 	public void dispFace() {
