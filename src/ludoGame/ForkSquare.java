@@ -3,7 +3,7 @@ package ludoGame;
 import java.awt.Color;
 
 public class ForkSquare extends Square {
-	private Square homeSquare;
+	private Square goalRowSquare;
 	
 	ForkSquare(Square nextSquare, Color c, int row, int col) {
 		super(nextSquare, SquareType.Fork, c, row, col);
@@ -32,14 +32,14 @@ public class ForkSquare extends Square {
 			col = this.getFurtherFromSeven(col);
 			
 			// Create home row square
-			next = new Square(next, SquareType.Home, c, row, col);
+			next = new Square(next, SquareType.GoalRow, c, row, col);
 		}
 		
-		this.homeSquare = next;
+		this.goalRowSquare = next;
 	}
 	
-	public Square getHomeSquare() {
-		return this.homeSquare;
+	public Square getGoalRowSquare() {
+		return this.goalRowSquare;
 	}
 	
 	private int getFurtherFromSeven(int n) {

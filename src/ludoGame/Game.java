@@ -1,8 +1,7 @@
 package ludoGame;
 
 import java.awt.Color;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 public class Game {
 	HashMap<Color, Player> players = new HashMap<Color, Player>();
@@ -39,6 +38,13 @@ public class Game {
 			new SquareInitData(SquareType.Fork, 7, 0),
 		};
 		
+		SquareInitData[] home = {
+			new SquareInitData(SquareType.Home, 1, 1),
+			new SquareInitData(SquareType.Home, 1, 3),
+			new SquareInitData(SquareType.Home, 3, 1),
+			new SquareInitData(SquareType.Home, 3, 3),
+		};
+		
 		// This firstSquare variable is used later on to close the loop
 		boolean isFirstSquare = true;
 		Square firstSquare = null;
@@ -46,31 +52,41 @@ public class Game {
 		// Build the board
 		Square nextSquare = null;
 		for(Color color: playerColors) {
-			for(SquareInitData squareData: path) {				
+			for(SquareInitData pathData: path) {				
 				// Create the next square in counterclockwise order
-				if (squareData.type == SquareType.Fork) {
-					nextSquare = new ForkSquare(nextSquare, color, squareData.row, squareData.col);
+				if (pathData.type == SquareType.Fork) {
+					nextSquare = new ForkSquare(nextSquare, color, pathData.row, pathData.col);
 				}
 				else {
-					nextSquare = new Square(nextSquare, squareData.type, color, squareData.row, squareData.col);
+					nextSquare = new Square(nextSquare, pathData.type, color, pathData.row, pathData.col);
 				}
-				
-				// Save row position for the following computation
-				int oldRow = squareData.row;
-				
-				// Flip the square position to the next quadrant
-				squareData.row = -squareData.col + 14;
-				squareData.col = oldRow;
 				
 				if (isFirstSquare) {
 					isFirstSquare = false;
 					firstSquare = nextSquare;
 				}
-				else if (squareData.type == SquareType.Start) {
-					// When reaching a starting square, create the corresponding player
-					Player player = new Player(color, nextSquare);
+				else if (pathData.type == SquareType.Start) {
+					// When reaching a starting square, create the corresponding player and its home squares
+					ArrayList<Square> homes = new ArrayList<Square>();
+					
+					for(SquareInitData homeData: home) {
+						homes.add(new Square(nextSquare, homeData.type, color, homeData.row, homeData.col));
+					}
+					
+					Player player = new Player(color, homes);
 					players.put(color, player);
 				}
+				
+				// Prepare the position for the next quadrant
+				int[] newPathPos = this.rotatePos(pathData.row, pathData.col);
+				pathData.row = newPathPos[0];
+				pathData.col = newPathPos[1];
+			}
+			
+			for(SquareInitData homeData: home) {
+				int[] newHomePos = this.rotatePos(homeData.row, homeData.col);
+				homeData.row = newHomePos[0];
+				homeData.col = newHomePos[1];
 			}
 		}
 		
@@ -88,40 +104,32 @@ public class Game {
 		
 		Square startSquare = this.players.get(Color.RED).getStartSquare();
 		Square curSquare = startSquare;
-		Square savedFork = null;
 		do {
-			char colorLetter;
-			if (curSquare.getColor() == Color.RED) {
-				colorLetter = 'R';
-			} else if (curSquare.getColor() == Color.GREEN) {
-				colorLetter = 'G';
-			} else if (curSquare.getColor() == Color.BLUE) {
-				colorLetter = 'B';
-			} else {
-				colorLetter = 'Y';
-			}
+			charBoard = updateCharBoard(charBoard, curSquare);
 			
-			charBoard[curSquare.getRow()][curSquare.getCol()] = colorLetter;
-			
-			// Get the next square, going into the home row when encountering a fork
+			// If the current square is a fork, travel its associated goal row
 			if (curSquare.getType() == SquareType.Fork) {
-				savedFork = curSquare;
 				// We now know curSquare is a fork, thus we can tell the compiler to consider curSquare as a ForkSquare
-				curSquare = ((ForkSquare) curSquare).getHomeSquare();
-			}
-			else {
-				curSquare = curSquare.getNextSquare();
+				Square goalRowSquare = ((ForkSquare) curSquare).getGoalRowSquare();
 				
-				// If curSquare is null, that means we reached past a goal square, thus we return to the fork
-				if (curSquare == null) {
-					curSquare = savedFork.getNextSquare();
+				for(int i=0; i<6; i++) {
+					charBoard = updateCharBoard(charBoard, goalRowSquare);
+					goalRowSquare = goalRowSquare.getNextSquare();
 				}
 			}
+			else if (curSquare.getType() == SquareType.Start) {
+				for(Square homeSquare: this.players.get(curSquare.getColor()).getHomeSquares()) {
+					charBoard = updateCharBoard(charBoard, homeSquare);
+				}
+			}
+			
+			curSquare = curSquare.getNextSquare();
 		} while (curSquare != startSquare);
 		
 		for (char[] row: charBoard) {
 			for (char c: row) {
 				System.out.print(c);
+				System.out.print(' ');
 			}
 			System.out.println();
 		} 
@@ -146,7 +154,7 @@ public class Game {
 				
 				if (toReturn.getType()==SquareType.Fork && toReturn.getColor()==t.getPlayer().getColor()) {
 					//case diverges if we are entering the goal row
-					toReturn = ((ForkSquare)toReturn).getHomeSquare();
+					toReturn = ((ForkSquare)toReturn).getGoalRowSquare();
 				} else {
 					toReturn = toReturn.getNextSquare();
 				}
@@ -168,6 +176,34 @@ public class Game {
 		}
 		
 		return toReturn;
+	}
+
+	private char[][] updateCharBoard(char[][] charBoard, Square curSquare) {
+		char colorLetter;
+		
+		if (curSquare.getColor() == Color.RED) {
+			colorLetter = 'R';
+		} else if (curSquare.getColor() == Color.GREEN) {
+			colorLetter = 'G';
+		} else if (curSquare.getColor() == Color.BLUE) {
+			colorLetter = 'B';
+		} else {
+			colorLetter = 'Y';
+		}
+		
+		charBoard[curSquare.getRow()][curSquare.getCol()] = colorLetter;
+		
+		return charBoard;
+	}
+	
+	// Transforms a row and a column to the same position in the next quadrant
+	private int[] rotatePos(int row, int col) {
+		int[] newPos = {
+			-col + 14,
+			row
+		};
+		
+		return newPos;
 	}
 	
 	public static void main(String[] args) {
