@@ -48,7 +48,12 @@ public class Game {
 		for(Color color: playerColors) {
 			for(SquareInitData squareData: path) {				
 				// Create the next square in counterclockwise order
-				nextSquare = new Square(nextSquare, squareData.type, color, squareData.row, squareData.col);
+				if (squareData.type == SquareType.Fork) {
+					nextSquare = new ForkSquare(nextSquare, color, squareData.row, squareData.col);
+				}
+				else {
+					nextSquare = new Square(nextSquare, squareData.type, color, squareData.row, squareData.col);
+				}
 				
 				// Save row position for the following computation
 				int oldRow = squareData.row;
@@ -83,6 +88,7 @@ public class Game {
 		
 		Square startSquare = this.players.get(Color.RED).getStartSquare();
 		Square curSquare = startSquare;
+		Square savedFork = null;
 		do {
 			char colorLetter;
 			if (curSquare.getColor() == Color.RED) {
@@ -97,7 +103,20 @@ public class Game {
 			
 			charBoard[curSquare.getRow()][curSquare.getCol()] = colorLetter;
 			
-			curSquare = curSquare.getNextSquare();
+			// Get the next square, going into the home row when encountering a fork
+			if (curSquare.getType() == SquareType.Fork) {
+				savedFork = curSquare;
+				// We now know curSquare is a fork, thus we can tell the compiler to consider curSquare as a ForkSquare
+				curSquare = ((ForkSquare) curSquare).getHomeSquare();
+			}
+			else {
+				curSquare = curSquare.getNextSquare();
+				
+				// If curSquare is null, that means we reached past a goal square, thus we return to the fork
+				if (curSquare == null) {
+					curSquare = savedFork.getNextSquare();
+				}
+			}
 		} while (curSquare != startSquare);
 		
 		for (char[] row: charBoard) {

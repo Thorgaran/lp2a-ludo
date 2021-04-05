@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class Square {
 	private Square nextSquare;
-	private Square forkNextSquare = null;
 	private Color color; // This color represents the quadrant the square is in
 	private ArrayList<Token> tokens = new ArrayList<Token>(); // List of tokens starts out as empty
 	private SquareType type;
@@ -18,23 +17,6 @@ public class Square {
 		this.color = c;
 		this.row = row;
 		this.col = col;
-		
-		// If the square is a fork, create the home row
-		if (t == SquareType.Fork) {
-			this.forkNextSquare = new Square(c, 5, 0, 0);
-		}
-	}
-	
-	Square(Color c, int homeSquaresLeft, int row, int col) {
-		this.color = c;
-		this.type = SquareType.Home;
-		
-		if (homeSquaresLeft > 0) {
-			this.nextSquare = new Square(c, homeSquaresLeft - 1, row, col);
-		}
-		else {
-			this.nextSquare = new Square(null, SquareType.Home, c, row, col);
-		}
 	}
 	
 	Square() {
