@@ -4,10 +4,11 @@ public class Token {
 	// Square position;
 	private Player player;
 	
-	Token(){
+	Token() {
 		System.out.println("Incorrect token initialization!");
 	}
-	Token(Player p){
+	
+	Token(Player p) {
 		this.player=p;
 	}
 	

@@ -13,7 +13,7 @@ public class Player {
 		this.homeSquares = homes;
 		
 		for(int i=0; i<4; i++) {
-			tokens[i] = new Token();
+			tokens[i] = new Token(this);
 		}
 	}
 	

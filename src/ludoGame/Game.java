@@ -138,8 +138,8 @@ public class Game {
 	public Square moveForward(Square ogPosition, int movNb,Token t) { //tatakae, tatakae
 		Square toReturn = ogPosition;
 		
-		if (toReturn.getType()==SquareType.Home) { 
-			//we check if the token is still trying to get out of its home
+		if (toReturn.getType() == SquareType.Home) { 
+			// We check if the token is still trying to get out of its home
 			
 			if (movNb==6) {
 				toReturn = toReturn.getNextSquare();
@@ -148,12 +148,12 @@ public class Game {
 			}
 		
 		} else {
-			//the token is already in play
+			// The token is already in play
 			
-			for (int i=0;i < movNb; i++) {
+			for(int i=0; i < movNb; i++) {
 				
 				if (toReturn.getType()==SquareType.Fork && toReturn.getColor()==t.getPlayer().getColor()) {
-					//case diverges if we are entering the goal row
+					// Case diverges if we are entering the goal row
 					toReturn = ((ForkSquare)toReturn).getGoalRowSquare();
 				} else {
 					toReturn = toReturn.getNextSquare();
@@ -167,7 +167,7 @@ public class Game {
 				 * 	}
 				 * }*/
 				
-				/*el*/if (toReturn.getType()==SquareType.Goal) {
+				/*el*/if (toReturn.getType() == SquareType.Goal) {
 					return toReturn; //we break the for instantly because the token reached the end
 				}
 			
