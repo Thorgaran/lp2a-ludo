@@ -9,7 +9,7 @@ public class Token {
 	}
 	
 	Token(Player p) {
-		this.player=p;
+		this.player = p;
 	}
 	
 	public Player getPlayer() {
@@ -19,7 +19,8 @@ public class Token {
 	public Square getPosition() {
 		return this.position;
 	}
+	
 	public void setPosition(Square s) {
-		this.position=s;
+		this.position = s;
 	}
 }

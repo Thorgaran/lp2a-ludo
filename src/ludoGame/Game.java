@@ -136,16 +136,17 @@ public class Game {
 		} 
 	}
 	
-	public Square moveForward(int movNb,Token t) { //tatakae, tatakae
+	// This function returns the square the token will be landing on, or null if the move is illegal
+	public Square moveForward(int movNb, Token t) { //tatakae, tatakae
 		Square toReturn = t.getPosition();
 		
 		if (toReturn.getType() == SquareType.Home) { 
 			// We check if the token is still trying to get out of its home
 			
-			if (movNb==6) {
+			if (movNb == 6) {
 				toReturn = toReturn.getNextSquare();
 			} else {
-				toReturn = null;
+				return null;
 			}
 		
 		} else {
@@ -153,9 +154,12 @@ public class Game {
 			
 			for(int i=0; i < movNb; i++) {
 				
-				if (toReturn.getType()==SquareType.Fork && toReturn.getColor()==t.getPlayer().getColor()) {
+				if (toReturn.getType() == SquareType.Fork && 
+					toReturn.getColor() == t.getPlayer().getColor() 
+					&& t.getPlayer().hasEaten()) 
+				{
 					// Case diverges if we are entering the goal row
-					toReturn = ((ForkSquare)toReturn).getGoalRowSquare();
+					toReturn = ((ForkSquare) toReturn).getGoalRowSquare();
 				} else {
 					toReturn = toReturn.getNextSquare();
 				}
@@ -168,8 +172,8 @@ public class Game {
 				 * 	}
 				 * }*/
 				
-				/*el*/if (toReturn.getType() == SquareType.Goal) {
-					return toReturn; //we break the for instantly because the token reached the end
+				/*el*/if (toReturn.getType() == SquareType.Goal && i < movNb - 1) {
+					return null; // The token can't reach the goal unless it gets the exact number of moves to land on it
 				}
 			
 			}
@@ -178,6 +182,31 @@ public class Game {
 		
 		return toReturn;
 	}
+	
+	public void playerTurn(Player p) {
+		HashMap<Token, Square> playableTokens = new HashMap<Token, Square>();
+		int diceResult = this.dice.roll(); // Roll the dice
+		
+		this.dice.dispFace();
+		
+		for (Token t: p.getTokens()) { // Check your valid moves
+			Square destSquare = this.moveForward(diceResult, t);
+			
+			if (destSquare != null) {
+				playableTokens.put(t, destSquare);
+			}
+		}
+		
+		if (playableTokens.isEmpty()) {
+			System.out.println("You can't play anything!");
+		} else {
+			Token chosenToken = p.chooseToken(playableTokens);
+			chosenToken.setPosition(playableTokens.get(chosenToken));
+			
+			//TODO: check si un pion est deja la et faire en consequence
+		}
+	}
+
 
 	private char[][] updateCharBoard(char[][] charBoard, Square curSquare) {
 		char colorLetter;
@@ -206,34 +235,7 @@ public class Game {
 		
 		return newPos;
 	}
-	
-	public void playerTurn(Player p) {
-		boolean playable = false;
-		ArrayList <Square> options = new ArrayList <Square> ();
-		int diceResult;
 		
-		diceResult=this.dice.roll(); //roll the dice
-		this.dice.dispFace();
-		
-		for (Token t : p.getTokens()) { //check your options
-			options.add(this.moveForward(diceResult, t));
-		}
-		
-		for (Square temp : options) { //check if any option is available
-			if (temp!=null) {
-				playable = true;
-			}
-		}
-		
-		if (playable == false) {
-			System.out.println("You can't play anything!");
-		} else {
-			int choice = 0; //TODO: faire un choix du pion joue
-			p.getSpecificToken(choice).setPosition(options.get(choice));
-			//TODO: check si un pion est deja la et faire en consequence
-		}
-	}
-	
 	public static void main(String[] args) {
 		Game game = new Game();
 		

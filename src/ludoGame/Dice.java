@@ -3,7 +3,7 @@ package ludoGame;
 public class Dice {
 	private int number;
 	
-	Dice(){
+	Dice() {
 		this.number = 0;
 	}
 	
@@ -13,20 +13,20 @@ public class Dice {
 	}
 	
 	public void dispFace() {
-		//to print the dice once the graphical interface is made
+		// To print the dice once the graphical interface is made
 		switch (this.number) {
 		case 1: System.out.println("1");
-		break;
+			break;
 		case 2: System.out.println("2");
-		break;
+			break;
 		case 3: System.out.println("3");
-		break;
+			break;
 		case 4: System.out.println("4");
-		break;
+			break;
 		case 5: System.out.println("5");
-		break;
+			break;
 		case 6: System.out.println("6");
-		break;
+			break;
 		default: System.out.println("Error: dice was not rolled yet");
 		}
 	}
