@@ -32,4 +32,13 @@ public class Player {
 	public Token[] getTokens(){
 		return this.tokens;
 	}
+	
+	public Token getSpecificToken(int i) {
+		if (i<0 || i>3) {
+			System.out.println("Unavailale token index!");
+			return null;
+		} else {
+			return this.tokens[i];
+		}
+	}
 }

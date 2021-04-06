@@ -136,8 +136,8 @@ public class Game {
 		} 
 	}
 	
-	public Square moveForward(Square ogPosition, int movNb,Token t) { //tatakae, tatakae
-		Square toReturn = ogPosition;
+	public Square moveForward(int movNb,Token t) { //tatakae, tatakae
+		Square toReturn = t.getPosition();
 		
 		if (toReturn.getType() == SquareType.Home) { 
 			// We check if the token is still trying to get out of its home
@@ -216,7 +216,7 @@ public class Game {
 		this.dice.dispFace();
 		
 		for (Token t : p.getTokens()) { //check your options
-			options.add(this.moveForward(t.getPosition(), diceResult, t));
+			options.add(this.moveForward(diceResult, t));
 		}
 		
 		for (Square temp : options) { //check if any option is available
@@ -229,7 +229,8 @@ public class Game {
 			System.out.println("You can't play anything!");
 		} else {
 			int choice = 0; //TODO: faire un choix du pion joue
-			//TODO: deplacer le pion dans la structure player et token, getters manquants
+			p.getSpecificToken(choice).setPosition(options.get(choice));
+			//TODO: check si un pion est deja la et faire en consequence
 		}
 	}
 	
