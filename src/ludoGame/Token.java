@@ -1,7 +1,7 @@
 package ludoGame;
 
 public class Token {
-	// Square position;
+	private Square position;
 	private Player player;
 	
 	Token() {
@@ -14,5 +14,12 @@ public class Token {
 	
 	public Player getPlayer() {
 		return this.player;
+	}
+	
+	public Square getPosition() {
+		return this.position;
+	}
+	public void setPosition(Square s) {
+		this.position=s;
 	}
 }

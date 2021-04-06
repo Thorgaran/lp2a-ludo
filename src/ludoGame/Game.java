@@ -5,6 +5,7 @@ import java.util.*;
 
 public class Game {
 	HashMap<Color, Player> players = new HashMap<Color, Player>();
+	private Dice dice = new Dice();
 	
 	Game() {
 		Color[] playerColors = {Color.YELLOW, Color.BLUE, Color.GREEN, Color.RED};
@@ -204,6 +205,32 @@ public class Game {
 		};
 		
 		return newPos;
+	}
+	
+	public void playerTurn(Player p) {
+		boolean playable = false;
+		ArrayList <Square> options = new ArrayList <Square> ();
+		int diceResult;
+		
+		diceResult=this.dice.roll(); //roll the dice
+		this.dice.dispFace();
+		
+		for (Token t : p.getTokens()) { //check your options
+			options.add(this.moveForward(t.getPosition(), diceResult, t));
+		}
+		
+		for (Square temp : options) { //check if any option is available
+			if (temp!=null) {
+				playable = true;
+			}
+		}
+		
+		if (playable == false) {
+			System.out.println("You can't play anything!");
+		} else {
+			int choice = 0; //TODO: faire un choix du pion joue
+			//TODO: deplacer le pion dans la structure player et token, getters manquants
+		}
 	}
 	
 	public static void main(String[] args) {

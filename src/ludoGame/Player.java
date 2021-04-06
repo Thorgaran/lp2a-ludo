@@ -28,4 +28,8 @@ public class Player {
 	public Color getColor() {
 		return this.color;
 	}
+	
+	public Token[] getTokens(){
+		return this.tokens;
+	}
 }
