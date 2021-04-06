@@ -53,4 +53,27 @@ public class Square {
 	public int getCol() {
 		return this.col;
 	}
+	
+	public String toString(int row) {
+		switch (row) {
+		case 0:
+			return "+" + Game.colorToChar(this.color) + "--+";
+		case 1:
+			StringBuffer str = new StringBuffer("|   |");
+			int i = 0;
+			while (i < this.tokens.size() && i < 3) {
+				str.setCharAt(i + 1, Game.colorToChar(this.tokens.get(i).getPlayer().getColor()));
+			}
+			return str.toString();
+		case 2:
+			return "+--" + this.type.toChar() + "+";
+		default:
+			System.out.println("Error, square string row index too big!");
+			return "";
+		}
+	}
+	
+	public String toString() {		
+		return this.toString(0) + "\n" + this.toString(1) + "\n" + this.toString(2);
+	}
 }

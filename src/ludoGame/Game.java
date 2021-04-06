@@ -96,43 +96,44 @@ public class Game {
 	}
 	
 	public void printBoard() {
-		char[][] charBoard = new char[15][15];
-		
-		// Fill each row with spaces
-		for (char[] row: charBoard) {
-			Arrays.fill(row, ' ');
-		}
+		Square[][] board = new Square[15][15];
 		
 		Square startSquare = this.players.get(Color.RED).getStartSquare();
 		Square curSquare = startSquare;
 		do {
-			charBoard = updateCharBoard(charBoard, curSquare);
-			
 			// If the current square is a fork, travel its associated goal row
 			if (curSquare.getType() == SquareType.Fork) {
 				// We now know curSquare is a fork, thus we can tell the compiler to consider curSquare as a ForkSquare
 				Square goalRowSquare = ((ForkSquare) curSquare).getGoalRowSquare();
 				
 				for(int i=0; i<6; i++) {
-					charBoard = updateCharBoard(charBoard, goalRowSquare);
+					board[goalRowSquare.getRow()][goalRowSquare.getCol()] = goalRowSquare;
 					goalRowSquare = goalRowSquare.getNextSquare();
 				}
 			}
 			else if (curSquare.getType() == SquareType.Start) {
 				for(Square homeSquare: this.players.get(curSquare.getColor()).getHomeSquares()) {
-					charBoard = updateCharBoard(charBoard, homeSquare);
+					board[homeSquare.getRow()][homeSquare.getCol()] = homeSquare;
 				}
 			}
+			
+			board[curSquare.getRow()][curSquare.getCol()] = curSquare;
 			
 			curSquare = curSquare.getNextSquare();
 		} while (curSquare != startSquare);
 		
-		for (char[] row: charBoard) {
-			for (char c: row) {
-				System.out.print(c);
-				System.out.print(' ');
+		for(Square[] row: board) {
+			for (int subRow = 0; subRow < 3; subRow++) {
+				for(Square square: row) {
+					if (square == null) {
+						System.out.print("     ");
+					}
+					else {
+						System.out.print(square.toString(subRow));
+					}
+				}
+				System.out.println();
 			}
-			System.out.println();
 		} 
 	}
 	
@@ -206,25 +207,6 @@ public class Game {
 			//TODO: check si un pion est deja la et faire en consequence
 		}
 	}
-
-
-	private char[][] updateCharBoard(char[][] charBoard, Square curSquare) {
-		char colorLetter;
-		
-		if (curSquare.getColor() == Color.RED) {
-			colorLetter = 'R';
-		} else if (curSquare.getColor() == Color.GREEN) {
-			colorLetter = 'G';
-		} else if (curSquare.getColor() == Color.BLUE) {
-			colorLetter = 'B';
-		} else {
-			colorLetter = 'Y';
-		}
-		
-		charBoard[curSquare.getRow()][curSquare.getCol()] = colorLetter;
-		
-		return charBoard;
-	}
 	
 	// Transforms a row and a column to the same position in the next quadrant
 	private int[] rotatePos(int row, int col) {
@@ -235,7 +217,23 @@ public class Game {
 		
 		return newPos;
 	}
-		
+	
+	public static char colorToChar(Color color) {
+		if (color == Color.RED) {
+			return 'R';
+		} else if (color == Color.GREEN) {
+			return 'G';
+		} else if (color == Color.BLUE) {
+			return 'B';
+		} else  if (color == Color.YELLOW) {
+			return 'Y';
+		} else {
+			System.out.println("Illegal player color!");
+			return '?';
+		}
+	}
+	
+	
 	public static void main(String[] args) {
 		Game game = new Game();
 		
