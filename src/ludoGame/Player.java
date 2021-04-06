@@ -21,6 +21,15 @@ public class Player {
 	public ArrayList<Square> getHomeSquares() {
 		return this.homeSquares;
 	}
+	public Square getEmptyHomeSquare() {
+		for (Square square : this.homeSquares) {
+			if (square.getTokens().size() == 0) {
+				return square;
+			}
+		}
+		System.out.println("No home square empty!");
+		return null;
+	}
 	
 	public Square getStartSquare() {
 		return this.homeSquares.get(0).getNextSquare();
@@ -42,12 +51,40 @@ public class Player {
 		return this.hasEaten;
 	}
 	
-	public Token chooseToken(HashMap<Token, Square> playableTokens) {
+	private Token chooseToken(HashMap<Token, Square> playableTokens) {
 		// For now, the player is a dumb AI who decides its move randomly
 		Random generator = new Random();
 		Token[] values = (Token[]) playableTokens.values().toArray();
 		Token chosenToken = values[generator.nextInt(values.length)];
 		
 		return chosenToken;
+	}
+	
+	public void turn(int diceResult) {
+		HashMap<Token, Square> playableTokens = new HashMap<Token, Square>();
+		
+		for (Token t: this.getTokens()) { // Check your valid moves
+			Square destSquare = t.moveForward(diceResult);
+			
+			if (destSquare != null) {
+				playableTokens.put(t, destSquare);
+			}
+		}
+		
+		if (playableTokens.isEmpty()) {
+			System.out.println("You can't play anything!");
+		} else {
+			Token chosenToken = this.chooseToken(playableTokens);
+			Square destSquare = playableTokens.get(chosenToken);
+			
+			if (destSquare.isEatable() == true) {
+				Token eatenToken = destSquare.getTokens().get(0);
+				eatenToken.move(eatenToken.getPlayer().getEmptyHomeSquare());
+				this.setHasEaten();
+			}
+			
+			chosenToken.move(destSquare);
+			
+		}
 	}
 }

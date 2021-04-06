@@ -137,77 +137,6 @@ public class Game {
 		} 
 	}
 	
-	// This function returns the square the token will be landing on, or null if the move is illegal
-	public Square moveForward(int movNb, Token t) { //tatakae, tatakae
-		Square toReturn = t.getPosition();
-		
-		if (toReturn.getType() == SquareType.Home) { 
-			// We check if the token is still trying to get out of its home
-			
-			if (movNb == 6) {
-				toReturn = toReturn.getNextSquare();
-			} else {
-				return null;
-			}
-		
-		} else {
-			// The token is already in play
-			
-			for(int i=0; i < movNb; i++) {
-				
-				if (toReturn.getType() == SquareType.Fork && 
-					toReturn.getColor() == t.getPlayer().getColor() 
-					&& t.getPlayer().hasEaten()) 
-				{
-					// Case diverges if we are entering the goal row
-					toReturn = ((ForkSquare) toReturn).getGoalRowSquare();
-				} else {
-					toReturn = toReturn.getNextSquare();
-				}
-				
-				/*if (toReturn.getTokens().isEmpty()!=true && condition bloquante) {
-				 * 	if (i!=movNb-1){
-				 * 		return null;
-				 * 	} else {
-				 * 		empilage des pions a definir
-				 * 	}
-				 * }*/
-				
-				/*el*/if (toReturn.getType() == SquareType.Goal && i < movNb - 1) {
-					return null; // The token can't reach the goal unless it gets the exact number of moves to land on it
-				}
-			
-			}
-		
-		}
-		
-		return toReturn;
-	}
-	
-	public void playerTurn(Player p) {
-		HashMap<Token, Square> playableTokens = new HashMap<Token, Square>();
-		int diceResult = this.dice.roll(); // Roll the dice
-		
-		this.dice.dispFace();
-		
-		for (Token t: p.getTokens()) { // Check your valid moves
-			Square destSquare = this.moveForward(diceResult, t);
-			
-			if (destSquare != null) {
-				playableTokens.put(t, destSquare);
-			}
-		}
-		
-		if (playableTokens.isEmpty()) {
-			System.out.println("You can't play anything!");
-		} else {
-			Token chosenToken = p.chooseToken(playableTokens);
-			chosenToken.setPosition(playableTokens.get(chosenToken));
-			
-			//TODO: check si un pion est deja la et faire en consequence
-		}
-	}
-	
 	// Transforms a row and a column to the same position in the next quadrant
 	private int[] rotatePos(int row, int col) {
 		int[] newPos = {
@@ -234,6 +163,21 @@ public class Game {
 	}
 	
 	
+	private void playerTurn(Player p) {
+		int diceResult;
+		int consecutiveTurns=1;
+		
+		do {
+		diceResult=this.dice.roll();
+		this.dice.dispFace();
+		
+		if (diceResult == 6 && consecutiveTurns == 3) {break;}
+		
+		p.turn(diceResult);
+		consecutiveTurns++;
+		} while (diceResult==6 && consecutiveTurns<4);
+	}
+
 	public static void main(String[] args) {
 		Game game = new Game();
 		

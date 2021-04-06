@@ -34,6 +34,9 @@ public class Square {
 	public void addToken(Token token) {
 		this.tokens.add(token);
 	}
+	public void removeToken(Token token) {
+		this.tokens.remove(token);
+	}
 	public ArrayList<Token> getTokens() {
 		return this.tokens;
 	}
@@ -53,7 +56,7 @@ public class Square {
 	public int getCol() {
 		return this.col;
 	}
-	
+
 	public String toString(int row) {
 		switch (row) {
 		case 0:
@@ -75,5 +78,36 @@ public class Square {
 	
 	public String toString() {		
 		return this.toString(0) + "\n" + this.toString(1) + "\n" + this.toString(2);
+	}
+		
+	public boolean isBlocking() {
+		
+		if (this.type == SquareType.GoalRow && this.tokens.isEmpty() == false) { //you can't pass one of your pieces in the goal row
+			return true;
+		
+		} else if (this.tokens.size() > 1) {
+				for (int i = 1; i < this.tokens.size(); i++) { //we look for blocks
+					if ( this.tokens.get(i).getPlayer().getColor() == this.tokens.get(i-1).getPlayer().getColor() ) {
+						return true;
+					}
+				}
+				return false;
+		
+		} else {
+			return false;
+		}
+	}
+	
+	//after calling this function, we know that if the return value is true, there is only one eatable token in the square
+	public boolean isEatable() {
+		if (this.getType() == SquareType.Safe || this.getType() == SquareType.Start) {
+			return false;
+			
+		} else if (this.getTokens().size() > 1) { //blocks are filtered
+			return false;
+		
+		} else {
+			return true;
+		}
 	}
 }
