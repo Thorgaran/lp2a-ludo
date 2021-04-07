@@ -174,7 +174,7 @@ public class Game {
 			diceResult=this.dice.roll();
 			this.dice.dispFace();
 				
-			System.out.println("Current player: " + Game.colorToChar(p.getColor()));
+			System.out.println("Current player: " + Game.colorToString(p.getColor()));
 			System.out.println("Has eaten: " + p.hasEaten());
 			
 			if (diceResult == 6 && consecutiveTurns == 3) { break; }
@@ -186,7 +186,7 @@ public class Game {
 	}
 	
 	public void play() {
-		List<Color> turnOrder = Arrays.asList(Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW); 
+		List<Color> turnOrder = new ArrayList<Color>(Arrays.asList(Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW)); 
 		Color currentColor = this.starter(turnOrder); 
 		
 		while (turnOrder.size()>1) {
