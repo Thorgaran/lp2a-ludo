@@ -12,19 +12,19 @@ public enum SquareType {
 	public char toChar() {
 		switch (this) {
 		case Normal:
-			return '-';
+			return ' ';
 		case Home:
 			return 'H';
 		case Start:
-			return 'S';
+			return '*';
 		case Safe:
 			return '*';
 		case Fork:
-			return 'F';
+			return ' ';
 		case GoalRow:
-			return 'X';
+			return ' ';
 		case Goal:
-			return 'G';
+			return '+';
 		default:
 			return '?';
 		}

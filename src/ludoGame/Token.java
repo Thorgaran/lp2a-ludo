@@ -93,9 +93,14 @@ public class Token {
 					toReturn = toReturn.getNextSquare();
 				}
 				
-				if (this.position.isBlocking() == true && i != movNb - 1) {
+				if (toReturn.isBlocking() == true && i != movNb - 1) {
 				  	return null;
 				}
+			}
+			
+			// You can't land on your own piece in the goal row
+			if (toReturn.getType() == SquareType.GoalRow && toReturn.nbTokens() != 0) {
+				return null;
 			}
 		
 		}

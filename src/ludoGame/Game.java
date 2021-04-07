@@ -10,6 +10,11 @@ public class Game {
 	
 	Game() {
 		Color[] playerColors = {Color.YELLOW, Color.BLUE, Color.GREEN, Color.RED};
+		HashMap<Color, Boolean> playerType = new HashMap<Color, Boolean>();
+		playerType.put(playerColors[0], false);
+		playerType.put(playerColors[1], false);
+		playerType.put(playerColors[2], false);
+		playerType.put(playerColors[3], false);
 		
 		// This class is basically a struct only used for the board creation
 		class SquareInitData {
@@ -75,7 +80,7 @@ public class Game {
 						homes.add(new Square(nextSquare, homeData.type, color, homeData.row, homeData.col));
 					}
 					
-					Player player = new Player(color, homes);
+					Player player = (playerType.get(color)) ? new HumanPlayer(color, homes) : new RandomAI(color, homes);
 					players.put(color, player);
 				}
 				
@@ -124,11 +129,20 @@ public class Game {
 			curSquare = curSquare.getNextSquare();
 		} while (curSquare != startSquare);
 		
+		System.out.println("    A  B  C  D  E  F  G  H  I  J  K  L  M  N  O");
+		int nbRow = 1;
 		for(Square[] row: board) {
-			for (int subRow = 0; subRow < 3; subRow++) {
+			for (int subRow = 0; subRow < 2; subRow++) {
+				if (subRow == 0) {
+					System.out.printf("%2d  ", nbRow);
+				}
+				else {
+					System.out.print("    ");
+				}
+				
 				for(Square square: row) {
 					if (square == null) {
-						System.out.print("     ");
+						System.out.print("   ");
 					}
 					else {
 						System.out.print(square.toString(subRow));
@@ -136,6 +150,7 @@ public class Game {
 				}
 				System.out.println();
 			}
+			nbRow++;
 		} 
 	}
 	
@@ -160,6 +175,7 @@ public class Game {
 			this.dice.dispFace();
 				
 			System.out.println("Current player: " + Game.colorToChar(p.getColor()));
+			System.out.println("Has eaten: " + p.hasEaten());
 			
 			if (diceResult == 6 && consecutiveTurns == 3) { break; }
 			

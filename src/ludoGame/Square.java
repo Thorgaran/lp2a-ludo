@@ -93,18 +93,24 @@ public class Square {
 	
 	public String toString(int row) {
 		switch (row) {
-		case 0:
-			return "+" + Game.colorToChar(this.color) + "--+";
-		case 1:
-			StringBuffer str = new StringBuffer("|   |");
+		case 0: {
+			StringBuffer str = new StringBuffer(".  ");
 			int i = 0;
 			while (i < this.tokens.size() && i < 3) {
-				str.setCharAt(i + 1, Game.colorToChar(this.tokens.get(i).getPlayer().getColor()));
+				str.setCharAt(i, Game.colorToChar(this.tokens.get(i).getColor()));
 				i++;
 			}
 			return str.toString();
-		case 2:
-			return "+--" + this.type.toChar() + "+";
+		}
+		case 1: {
+			StringBuffer str = new StringBuffer(this.type.toChar() + "  ");
+			int i = 3;
+			while (i < this.tokens.size() && i < 5) {
+				str.setCharAt(i - 2, Game.colorToChar(this.tokens.get(i).getColor()));
+				i++;
+			}			
+			return str.toString();
+		}
 		default:
 			System.out.println("Error, square string row index too big!");
 			return "";

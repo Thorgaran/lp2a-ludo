@@ -3,13 +3,13 @@ package ludoGame;
 import java.awt.Color;
 import java.util.*;
 
-public class Player {
+public abstract class Player {
 	private Color color;
 	private ArrayList<Square> homeSquares;
 	private Token[] tokens = new Token[4];
 	private boolean hasEaten = false;
 	
-	private static Scanner keyboard = new Scanner(System.in);
+	protected static Scanner keyboard = new Scanner(System.in);
 	
 	Player(Color color, ArrayList<Square> homes) {
 		this.color = color;
@@ -53,24 +53,7 @@ public class Player {
 		return this.hasEaten;
 	}
 	
-	private Token chooseToken(HashMap<Token, Square> playableTokens) {
-		Token chosenToken = null;
-		if (playableTokens.isEmpty()) {
-			System.out.println("You can't play anything!");
-		}
-		else {
-			// For now, the player is a dumb AI who decides its move randomly
-			Random generator = new Random();
-			Object[] keys = playableTokens.keySet().toArray();
-			chosenToken = (Token) keys[generator.nextInt(keys.length)];
-			
-			System.out.println("Move decided at random");
-		}
-		
-		Player.keyboard.nextLine();
-		
-		return chosenToken;
-	}
+	abstract protected Token chooseToken(HashMap<Token, Square> playableTokens);
 	
 	public void turn(int diceResult) {
 		HashMap<Token, Square> playableTokens = new HashMap<Token, Square>();
