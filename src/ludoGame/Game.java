@@ -171,28 +171,59 @@ public class Game {
 	
 	public void play() {
 		List<Color> turnOrder = Arrays.asList(Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW); 
-		Color currentColor = Color.GREEN; // TODO: get the starting player with random dice throws
+		Color currentColor = this.starter(turnOrder); 
 		
-		while (true) {
-			playerTurn(this.players.get(currentColor));
-			
-			currentColor = turnOrder.get((turnOrder.indexOf(currentColor) + 1) % 4);
+		while (turnOrder.size()>1) {
+			this.playerTurn(this.players.get(currentColor));
+			if (this.players.get(currentColor).checkWin() == true){
+				turnOrder.remove(currentColor);
+			}
+			currentColor = turnOrder.get((turnOrder.indexOf(currentColor) + 1) % turnOrder.size());
 		}
+		System.out.println("Game ended!");
 	}
 
-	public static char colorToChar(Color color) {
+	public Color starter(List<Color> l){
+		Color toReturn = Color.RED;
+		int bestRoll,newRoll;
+		System.out.println(Game.colorToString(l.get(0)) + " player rolls the dice:");
+		bestRoll = this.dice.roll();
+		this.dice.dispFace();
+		for(int i=1; i<4; i++){
+			do {
+			System.out.println(Game.colorToString(l.get(i)) + " player rolls the dice:");
+			newRoll = this.dice.roll();
+			this.dice.dispFace();
+			if (newRoll == bestRoll) {
+				System.out.println("Draw! Please roll again!");
+			}
+			} while (newRoll == bestRoll);
+			if (newRoll>bestRoll) {
+				bestRoll = newRoll;
+				toReturn = l.get(i);
+			}
+		}
+		System.out.println(Game.colorToString(toReturn) + " begins!");
+		return toReturn;
+	}
+	
+	public static String colorToString(Color color) {
 		if (color == Color.RED) {
-			return 'R';
+			return "Red";
 		} else if (color == Color.GREEN) {
-			return 'G';
+			return "Green";
 		} else if (color == Color.BLUE) {
-			return 'B';
+			return "Blue";
 		} else  if (color == Color.YELLOW) {
-			return 'Y';
+			return "Yellow";
 		} else {
 			System.out.println("Illegal player color!");
-			return '?';
+			return "?";
 		}
+	}
+	
+	public static char colorToChar(Color color) {
+		return Game.colorToString(color).charAt(0);
 	}
 
 	public static void main(String[] args) {

@@ -97,4 +97,17 @@ public class Player {
 			
 		}
 	}
+	
+	public boolean checkWin() {
+		boolean toReturn = true;
+		for(Token t:this.tokens) {
+			if (t.getPosition().getType()!=SquareType.Goal) {
+				toReturn = false;
+			}
+		}
+		if (toReturn == true) {
+			System.out.println(Game.colorToString(this.color) + " player finished! Congratulations!");
+		}
+		return toReturn;
+	}
 }
