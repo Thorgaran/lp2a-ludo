@@ -1,10 +1,11 @@
 package ludoGame;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.*;
 
 public class Game {
-	HashMap<Color, Player> players = new HashMap<Color, Player>();
+	LinkedHashMap<Color, Player> players = new LinkedHashMap<Color, Player>();
 	private Dice dice = new Dice();
 	
 	Game() {
@@ -100,6 +101,7 @@ public class Game {
 		
 		Square startSquare = this.players.get(Color.RED).getStartSquare();
 		Square curSquare = startSquare;
+		
 		do {
 			// If the current square is a fork, travel its associated goal row
 			if (curSquare.getType() == SquareType.Fork) {
@@ -146,7 +148,38 @@ public class Game {
 		
 		return newPos;
 	}
+
+	private void playerTurn(Player p) {
+		int diceResult;
+		int consecutiveTurns=1;
+		
+		do {
+			this.printBoard();
+
+			diceResult=this.dice.roll();
+			this.dice.dispFace();
+				
+			System.out.println("Current player: " + Game.colorToChar(p.getColor()));
+			
+			if (diceResult == 6 && consecutiveTurns == 3) { break; }
+			
+			p.turn(diceResult);
+						
+			consecutiveTurns++;
+		} while (diceResult == 6 && consecutiveTurns < 4);
+	}
 	
+	public void play() {
+		List<Color> turnOrder = Arrays.asList(Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW); 
+		Color currentColor = Color.GREEN; // TODO: get the starting player with random dice throws
+		
+		while (true) {
+			playerTurn(this.players.get(currentColor));
+			
+			currentColor = turnOrder.get((turnOrder.indexOf(currentColor) + 1) % 4);
+		}
+	}
+
 	public static char colorToChar(Color color) {
 		if (color == Color.RED) {
 			return 'R';
@@ -161,27 +194,11 @@ public class Game {
 			return '?';
 		}
 	}
-	
-	
-	private void playerTurn(Player p) {
-		int diceResult;
-		int consecutiveTurns=1;
-		
-		do {
-		diceResult=this.dice.roll();
-		this.dice.dispFace();
-		
-		if (diceResult == 6 && consecutiveTurns == 3) {break;}
-		
-		p.turn(diceResult);
-		consecutiveTurns++;
-		} while (diceResult==6 && consecutiveTurns<4);
-	}
 
 	public static void main(String[] args) {
 		Game game = new Game();
 		
-		game.printBoard();
+		game.play();
 	}
 
 }

@@ -1,5 +1,7 @@
 package ludoGame;
 
+import java.awt.Color;
+
 public class Token {
 	private Square position;
 	private Player player;
@@ -20,6 +22,10 @@ public class Token {
 		return this.player;
 	}
 	
+	public Color getColor() {
+		return this.player.getColor();
+	}
+	
 	public Square getPosition() {
 		return this.position;
 	}
@@ -35,18 +41,20 @@ public class Token {
 		return this.height;
 	}
 	
+	// True if the token is at the bottom of a pile of two with no other token on top
+	public boolean isBlockBase() {
+		return this.position.getTokens().get(this.height + 1).getColor() == this.getColor() &&
+				this.position.nbTokens() == this.height + 2;
+	}
+	
+	// A token is blocked if there is a token of another color above it, or two+ tokens of the same color
 	public boolean isBlocked() {
-		
-		if (this.position.getTokens().size() > this.height + 1) {
-			
-			for (int i = this.height + 1; i < this.position.getTokens().size(); i++) {
-				if (this.position.getTokens().get(i).getPlayer().getColor() != this.player.getColor()) {
-					return true;
-				}
-			}
-			return false;
-		
-		} else {
+		// If there are tokens above this one
+		if (this.position.nbTokens() > this.height + 1) {
+			// Then the token cannot move unless it is a block base
+			return !this.isBlockBase();
+		} 
+		else {
 			return false;
 		}
 	
@@ -56,7 +64,10 @@ public class Token {
 	public Square moveForward(int movNb) { //tatakae, tatakae
 		Square toReturn = this.getPosition();
 		
-		if (toReturn.getType() == SquareType.Home) { 
+		if (toReturn.getType() == SquareType.Goal) {
+			return null;
+		}
+		else if (toReturn.getType() == SquareType.Home) { 
 			// We check if the token is still trying to get out of its home
 			
 			if (movNb == 6) {
@@ -64,31 +75,27 @@ public class Token {
 			} else {
 				return null;
 			}
-		
-		} else if (this.isBlocked()==true) {
+		} 
+		else if (this.isBlocked()) {
 			return null;
-		
-		} else {
-			// The token is already in play
-			
+		}
+		else {
+			// The token is already in play and not blocked, thus it can try leaving its square
 			for(int i=0; i < movNb; i++) {
 				
 				if (toReturn.getType() == SquareType.Fork && 
-					toReturn.getColor() == this.getPlayer().getColor() 
-					&& this.getPlayer().hasEaten()) 
+					toReturn.getColor() == this.getColor() &&
+					this.getPlayer().hasEaten())
 				{
 					// Case diverges if we are entering the goal row
 					toReturn = ((ForkSquare) toReturn).getGoalRowSquare();
 				} else {
 					toReturn = toReturn.getNextSquare();
 				}
-				if (this.position.isBlocking() == true && i!=movNb-1) {
+				
+				if (this.position.isBlocking() == true && i != movNb - 1) {
 				  	return null;
 				}
-				if (toReturn.getType() == SquareType.Goal && i < movNb - 1) {
-					return null; // The token can't reach the goal unless it gets the exact number of moves to land on it
-				}
-			
 			}
 		
 		}
