@@ -43,8 +43,9 @@ public class Token {
 	
 	// True if the token is at the bottom of a pile of two with no other token on top
 	public boolean isBlockBase() {
-		return this.position.getTokens().get(this.height + 1).getColor() == this.getColor() &&
-				this.position.nbTokens() == this.height + 2;
+		// Condition order matters here
+		return this.position.nbTokens() == this.height + 2 &&
+				this.position.getTokens().get(this.height + 1).getColor() == this.getColor();
 	}
 	
 	// A token is blocked if there is a token of another color above it, or two+ tokens of the same color
@@ -80,14 +81,24 @@ public class Token {
 			return null;
 		}
 		else {
+			// If the token is a block base, it can only move half the squares when the dice is even
+			if (this.isBlockBase()) {
+				if (movNb % 2 == 0) {
+					movNb = movNb / 2;
+				}
+				else {
+					return null;
+				}
+			}
+			
 			// The token is already in play and not blocked, thus it can try leaving its square
 			for(int i=0; i < movNb; i++) {
-				
+				// Test if the token fulfills all conditions to enter the goal row
 				if (toReturn.getType() == SquareType.Fork && 
 					toReturn.getColor() == this.getColor() &&
-					this.getPlayer().hasEaten())
+					this.getPlayer().hasEaten() &&
+					!this.isBlockBase())
 				{
-					// Case diverges if we are entering the goal row
 					toReturn = ((ForkSquare) toReturn).getGoalRowSquare();
 				} else {
 					toReturn = toReturn.getNextSquare();

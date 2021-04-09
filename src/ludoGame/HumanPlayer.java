@@ -16,7 +16,8 @@ public class HumanPlayer extends Player {
 		int nbOptions = 0;
 		for(Token token: tokenList) {
 			nbOptions++;
-			System.out.println(nbOptions + ": " + (char) (token.getPosition().getCol() + 65) + " " + (token.getPosition().getRow() + 1));
+			System.out.print(nbOptions + ": " + (char) (token.getPosition().getCol() + 65) + " " + (token.getPosition().getRow() + 1));
+			System.out.println(token.isBlockBase() ? " (block)" : "");
 		}
 		
 		for(int i = nbOptions; i < 4; i++) {

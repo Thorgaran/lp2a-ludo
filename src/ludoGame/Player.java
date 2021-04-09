@@ -45,10 +45,6 @@ public abstract class Player {
 		return this.tokens;
 	}
 	
-	public void setHasEaten() {
-		this.hasEaten = true;
-	}
-	
 	public boolean hasEaten() {
 		return this.hasEaten;
 	}
@@ -71,26 +67,37 @@ public abstract class Player {
 			Square destSquare = playableTokens.get(chosenToken);
 			
 			if (destSquare.isEatable(chosenToken)) {
-				Token eatenToken = destSquare.getTokens().get(0);
-				eatenToken.move(eatenToken.getPlayer().getEmptyHomeSquare());
-				this.setHasEaten();
+				while (destSquare.nbTokens() > 0) {
+					Token eatenToken = destSquare.getTokens().get(0);
+					eatenToken.move(eatenToken.getPlayer().getEmptyHomeSquare());
+				}
+				this.hasEaten = true;
 			}
+			
+			// startSquare will only be defined is the token is a block base
+			Square startSquare = (chosenToken.isBlockBase()) ? chosenToken.getPosition() : null;
 			
 			chosenToken.move(destSquare);
 			
+			// If the token is a block base, move the token above it too
+			if (startSquare != null) {
+				startSquare.getTokens().get(startSquare.nbTokens() - 1).move(destSquare);
+			}
 		}
 	}
 	
-	public boolean checkWin() {
-		boolean toReturn = true;
-		for(Token t:this.tokens) {
-			if (t.getPosition().getType()!=SquareType.Goal) {
-				toReturn = false;
+	public boolean hasWon() {
+		boolean hasWon = true;
+		for(Token t: this.tokens) {
+			if (t.getPosition().getType() != SquareType.Goal) {
+				hasWon = false;
 			}
 		}
-		if (toReturn == true) {
+		
+		if (hasWon == true) {
 			System.out.println(Game.colorToString(this.color) + " player finished! Congratulations!");
 		}
-		return toReturn;
+		
+		return hasWon;
 	}
 }

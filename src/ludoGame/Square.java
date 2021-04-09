@@ -84,10 +84,20 @@ public class Square {
 	public boolean isEatable(Token activeToken) {
 		if (this.getType() == SquareType.Safe || this.getType() == SquareType.Start) {
 			return false;
-			
-		} else { // Blocks are filtered because if there are any the size is greater than 1
-			return this.nbTokens() == 1 && 
-					this.getTokens().get(0).getColor() != activeToken.getColor();
+		}
+		else {
+			switch (this.nbTokens()) {
+			case 1:
+				// Tokens can't eat tokens of the same color
+				return this.getTokens().get(0).getColor() != activeToken.getColor();
+			case 2:
+				// Blocks can eat other blocks
+				return this.getTokens().get(0).getColor() != activeToken.getColor() &&
+						activeToken.isBlockBase() && 
+						this.getTokens().get(0).isBlockBase();
+			default:
+				return false;
+			}		
 		}
 	}
 	

@@ -189,22 +189,26 @@ public class Game {
 		List<Color> turnOrder = new ArrayList<Color>(Arrays.asList(Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW)); 
 		Color currentColor = this.starter(turnOrder); 
 		
-		while (turnOrder.size()>1) {
+		while (turnOrder.size() > 1) {
 			this.playerTurn(this.players.get(currentColor));
-			if (this.players.get(currentColor).checkWin() == true){
+			
+			if (this.players.get(currentColor).hasWon()){
 				turnOrder.remove(currentColor);
 			}
+			
 			currentColor = turnOrder.get((turnOrder.indexOf(currentColor) + 1) % turnOrder.size());
 		}
 		System.out.println("Game ended!");
 	}
 
-	public Color starter(List<Color> l){
+	public Color starter(List<Color> l) {
 		Color toReturn = Color.RED;
-		int bestRoll,newRoll;
+		int bestRoll, newRoll;
+		
 		System.out.println(Game.colorToString(l.get(0)) + " player rolls the dice:");
 		bestRoll = this.dice.roll();
 		this.dice.dispFace();
+		
 		for(int i=1; i<4; i++){
 			do {
 			System.out.println(Game.colorToString(l.get(i)) + " player rolls the dice:");
