@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.*;
 
+import javax.swing.JFrame;
+
 public class Game {
 	LinkedHashMap<Color, Player> players = new LinkedHashMap<Color, Player>();
 	private Dice dice = new Dice();
@@ -249,7 +251,35 @@ public class Game {
 	public static void main(String[] args) {
 		Game game = new Game();
 		
-		game.play();
+		Board board = new Board();
+		
+		Square startSquare = game.players.get(Color.RED).getStartSquare();
+		Square curSquare = startSquare;
+		
+		do {
+			// If the current square is a fork, travel its associated goal row
+			if (curSquare.getType() == SquareType.Fork) {
+				// We now know curSquare is a fork, thus we can tell the compiler to consider curSquare as a ForkSquare
+				Square goalRowSquare = ((ForkSquare) curSquare).getGoalRowSquare();
+				
+				for(int i=0; i<6; i++) {
+					board.addSquare(goalRowSquare.getRow(), goalRowSquare.getCol(), 1, 1);
+					goalRowSquare = goalRowSquare.getNextSquare();
+				}
+			}
+			else if (curSquare.getType() == SquareType.Start) {
+				for(Square homeSquare: game.players.get(curSquare.getColor()).getHomeSquares()) {
+					board.addSquare(homeSquare.getRow(), homeSquare.getCol(), 1, 1);
+				}
+			}
+			
+			board.addSquare(curSquare.getRow(), curSquare.getCol(), 1, 1);
+			
+			curSquare = curSquare.getNextSquare();
+		} while (curSquare != startSquare);
+		
+		board.build();
+		//game.play();
 	}
 
 }
