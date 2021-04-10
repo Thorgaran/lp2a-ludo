@@ -64,25 +64,33 @@ public abstract class Player {
 		
 		Token chosenToken = this.chooseToken(playableTokens);
 		if (chosenToken != null) {
+			Square startSquare = chosenToken.getPosition();
 			Square destSquare = playableTokens.get(chosenToken);
 			
 			if (destSquare.isEatable(chosenToken)) {
 				while (destSquare.nbTokens() > 0) {
 					Token eatenToken = destSquare.getTokens().get(0);
-					eatenToken.move(eatenToken.getPlayer().getEmptyHomeSquare());
+					Square homeSquare = eatenToken.getPlayer().getEmptyHomeSquare();
+					
+					eatenToken.move(homeSquare);
+					homeSquare.repaint();
 				}
 				this.hasEaten = true;
 			}
 			
-			// startSquare will only be defined is the token is a block base
-			Square startSquare = (chosenToken.isBlockBase()) ? chosenToken.getPosition() : null;
+			// This needs to be checked before moving the token
+			boolean movingBlock = chosenToken.isBlockBase();
 			
 			chosenToken.move(destSquare);
 			
 			// If the token is a block base, move the token above it too
-			if (startSquare != null) {
+			if (movingBlock) {
 				startSquare.getTokens().get(startSquare.nbTokens() - 1).move(destSquare);
 			}
+			
+			// Repaint start and destination squares
+			startSquare.repaint();
+			destSquare.repaint();
 		}
 	}
 	

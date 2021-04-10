@@ -12,6 +12,8 @@ public class Square {
 	private int row;
 	private int col;
 	
+	private DisplayedSquare dispSquare;
+	
 	Square(Square nextSquare, SquareType t, Color c, int row, int col) {
 		this.nextSquare = nextSquare;
 		this.type = t;
@@ -64,6 +66,10 @@ public class Square {
 		return this.col;
 	}
 	
+	public void setDisplayedSquare(DisplayedSquare dispSquare) {
+		this.dispSquare = dispSquare;
+	}
+	
 	// Returns true if that square prevents tokens from going past
 	public boolean isBlocking() {
 		if (this.type == SquareType.Goal) {
@@ -101,6 +107,10 @@ public class Square {
 		}
 	}
 	
+	public void repaint() {
+		this.dispSquare.repaint();
+	}
+	
 	public String toString(int row) {
 		switch (row) {
 		case 0: {
@@ -129,6 +139,5 @@ public class Square {
 	
 	public String toString() {		
 		return this.toString(0) + "\n" + this.toString(1) + "\n" + this.toString(2);
-
 	}
 }

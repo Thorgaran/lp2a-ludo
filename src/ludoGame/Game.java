@@ -59,12 +59,22 @@ public class Game {
 		Square firstSquare = null;
 		
 		// Build the board
+		Board board = new Board();
 		Square nextSquare = null;
+		
 		for(Color color: playerColors) {
 			for(SquareInitData pathData: path) {				
 				// Create the next square in counterclockwise order
 				if (pathData.type == SquareType.Fork) {
 					nextSquare = new ForkSquare(nextSquare, color, pathData.row, pathData.col);
+					
+					// Travel the home row to add squares in the board
+					Square goalRowSquare = ((ForkSquare) nextSquare).getGoalRowSquare();
+					
+					while (goalRowSquare != null) {
+						goalRowSquare.setDisplayedSquare(board.addSquare(goalRowSquare));
+						goalRowSquare = goalRowSquare.getNextSquare();
+					}
 				}
 				else {
 					nextSquare = new Square(nextSquare, pathData.type, color, pathData.row, pathData.col);
@@ -79,12 +89,17 @@ public class Game {
 					ArrayList<Square> homes = new ArrayList<Square>();
 					
 					for(SquareInitData homeData: home) {
-						homes.add(new Square(nextSquare, homeData.type, color, homeData.row, homeData.col));
+						Square homeSquare = new Square(nextSquare, homeData.type, color, homeData.row, homeData.col);
+						homes.add(homeSquare);
+						homeSquare.setDisplayedSquare(board.addSquare(homeSquare));
 					}
 					
 					Player player = (playerType.get(color)) ? new HumanPlayer(color, homes) : new RandomAI(color, homes);
 					players.put(color, player);
 				}
+				
+				// Add the square in the board
+				nextSquare.setDisplayedSquare(board.addSquare(nextSquare));
 				
 				// Prepare the position for the next quadrant
 				int[] newPathPos = this.rotatePos(pathData.row, pathData.col);
@@ -101,6 +116,8 @@ public class Game {
 		
 		// Close the loop
 		firstSquare.setNextSquare(nextSquare);
+		
+		board.build();
 	}
 	
 	public void printBoard() {
@@ -251,35 +268,7 @@ public class Game {
 	public static void main(String[] args) {
 		Game game = new Game();
 		
-		Board board = new Board();
-		
-		Square startSquare = game.players.get(Color.RED).getStartSquare();
-		Square curSquare = startSquare;
-		
-		do {
-			// If the current square is a fork, travel its associated goal row
-			if (curSquare.getType() == SquareType.Fork) {
-				// We now know curSquare is a fork, thus we can tell the compiler to consider curSquare as a ForkSquare
-				Square goalRowSquare = ((ForkSquare) curSquare).getGoalRowSquare();
-				
-				for(int i=0; i<6; i++) {
-					board.addSquare(goalRowSquare.getRow(), goalRowSquare.getCol(), 1, 1);
-					goalRowSquare = goalRowSquare.getNextSquare();
-				}
-			}
-			else if (curSquare.getType() == SquareType.Start) {
-				for(Square homeSquare: game.players.get(curSquare.getColor()).getHomeSquares()) {
-					board.addSquare(homeSquare.getRow(), homeSquare.getCol(), 1, 1);
-				}
-			}
-			
-			board.addSquare(curSquare.getRow(), curSquare.getCol(), 1, 1);
-			
-			curSquare = curSquare.getNextSquare();
-		} while (curSquare != startSquare);
-		
-		board.build();
-		//game.play();
+		game.play();
 	}
 
 }

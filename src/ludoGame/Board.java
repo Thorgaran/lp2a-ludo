@@ -12,21 +12,28 @@ public class Board extends JFrame {
 		this.getContentPane().setLayout(new GridBagLayout());
 	}
 	
-	public void addSquare(int row, int col, int height, int width) {
+	public DisplayedSquare addSquare(Square square) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
 		
-		JLabel square = new JLabel("Square");
-		square.setBorder(BorderFactory.createLineBorder(Color.black));
-		c.gridx = row;
-		c.gridy = col;
-		c.gridheight = height;
-		c.gridwidth = width;
-		this.getContentPane().add(square, c);
+		DisplayedSquare dispSquare = new DisplayedSquare(square);
+		dispSquare.setPreferredSize(new Dimension(50, 50));
+		dispSquare.setBorder(BorderFactory.createLineBorder(Color.black));
+		c.gridx = square.getCol();
+		c.gridy = square.getRow();
+		c.gridheight = 1;
+		c.gridwidth = 1;
+		this.getContentPane().add(dispSquare, c);
+		
+		return dispSquare;
 	}
 	
 	public void build() {
 		this.pack();
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	    this.setLocation(dim.width/2 - this.getWidth()/2, dim.height/2 - this.getHeight()/2);
+		
 		this.setVisible(true);
 	}
 }
