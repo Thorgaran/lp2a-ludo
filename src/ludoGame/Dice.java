@@ -14,7 +14,7 @@ public class Dice {
 		return this.number;
 	}
 	
-	public void dispFace() {
+	public int dispFace() {
 		// To print the dice once the graphical interface is made
 		switch (this.number) {
 		case 1: System.out.println("Dice: 1");
@@ -31,5 +31,6 @@ public class Dice {
 			break;
 		default: System.out.println("Error: dice was not rolled yet");
 		}
+		return this.number;
 	}
 }

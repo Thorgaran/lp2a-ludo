@@ -10,7 +10,7 @@ public class Game {
 	LinkedHashMap<Color, Player> players = new LinkedHashMap<Color, Player>();
 	private Dice dice = new Dice();
 	
-	Game() {
+	Game() throws InterruptedException {
 		Color[] playerColors = {Color.YELLOW, Color.BLUE, Color.GREEN, Color.RED};
 		HashMap<Color, Boolean> playerType = new HashMap<Color, Boolean>();
 		playerType.put(playerColors[0], false);
@@ -117,7 +117,9 @@ public class Game {
 		// Close the loop
 		firstSquare.setNextSquare(nextSquare);
 		
+		
 		board.build();
+		board.diceDisplay(1);
 	}
 	
 	public void printBoard() {
@@ -265,7 +267,7 @@ public class Game {
 		return Game.colorToString(color).charAt(0);
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		Game game = new Game();
 		
 		game.play();

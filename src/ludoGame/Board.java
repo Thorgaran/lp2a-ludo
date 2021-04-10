@@ -36,4 +36,37 @@ public class Board extends JFrame {
 		
 		this.setVisible(true);
 	}
+	
+	public void diceDisplay(int roll) throws InterruptedException {
+		Icon[] diceFacesImg = {
+			new ImageIcon("dice_1.png"),
+			new ImageIcon("dice_2.png"),
+			new ImageIcon("dice_3.png"),
+			new ImageIcon("dice_4.png"),
+			new ImageIcon("dice_5.png"),
+			new ImageIcon("dice_6.png")
+		};
+		JLabel dice = new JLabel();
+		dice.setIcon(diceFacesImg[0]);
+		dice.setVisible(false);
+		GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        dice.setPreferredSize(new Dimension(50, 50));
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        dice.setVisible(true);
+        this.getContentPane().add(dice, c);	
+        this.repaint();
+        Thread.sleep(500);
+        dice.setIcon(diceFacesImg[2]);
+        dice.repaint();
+        Thread.sleep(500);
+        dice.setIcon(diceFacesImg[4]);
+        dice.repaint();
+        Thread.sleep(500);
+        dice.setIcon(diceFacesImg[roll-1]);
+        dice.repaint();
+     }
 }
