@@ -10,6 +10,9 @@ public class Token extends JPanel implements MouseListener {
 	private Player player;
 	private int height;
 	
+	// Only used for human player tokens
+	private boolean isActive = false;
+	
 	Token() {
 		System.out.println("Incorrect token initialization!");
 	}
@@ -27,7 +30,7 @@ public class Token extends JPanel implements MouseListener {
         //this.setMinimumSize(new Dimension(20, 15));
         //this.setPreferredSize(new Dimension(20, 15));
         //this.setMaximumSize(new Dimension(20, 15));
-        this.setSize(21, 16);
+        this.setSize(42, 19);
 
 
         this.setOpaque(false);
@@ -55,6 +58,10 @@ public class Token extends JPanel implements MouseListener {
 	public int getTokHeight() {
 		return this.height;
 	}
+	
+	public void setIsActive(boolean isActive) {
+		this.isActive = isActive;
+	}	
 	
 	// True if the token is at the bottom of a pile of two with no other token on top
 	public boolean isBlockBase() {
@@ -148,23 +155,28 @@ public class Token extends JPanel implements MouseListener {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
 		
-		this.setBackground(this.position.getBackground());
-		this.setLocation(15, 30 - 10*this.getTokHeight());
+		this.setLocation(4, 29 - 8*this.getTokHeight());
 		
 		g2d.setColor(this.getColor().darker());
-		g2d.fillRect(0, 5, 20, 5);
+		g2d.fillRect(0, 7, 41, 7);
 		g2d.setColor(this.getColor().darker().darker());
-		g2d.drawRect(0, 5, 20, 4);
+		g2d.drawRect(0, 7, 41, 7);
 		
 		g2d.setColor(this.getColor().darker());
-		g2d.fillOval(0, 5, 20, 10);
+		g2d.fillOval(0, 7, 41, 11);
 		g2d.setColor(this.getColor().darker().darker());
-		g2d.drawOval(0, 5, 20, 10);
+		g2d.drawArc(0, 7, 41, 11, 180, 180);
 		
 		g2d.setColor(this.getColor().darker());
-		g2d.fillOval(0, 0, 20, 10);
+		g2d.fillOval(0, 0, 41, 11);
 		g2d.setColor(this.getColor().darker().darker());
-		g2d.drawOval(0, 0, 20, 10);
+		g2d.drawOval(0, 0, 41, 11);
+		
+		if (this.isActive) {
+			g2d.setColor(Color.WHITE);
+			g2d.drawLine(12, 12, 29, 17);
+			g2d.drawLine(12, 17, 29, 12);
+		}
 	}
 	
 	// Required methods for MouseListener
@@ -173,6 +185,9 @@ public class Token extends JPanel implements MouseListener {
     public void mouseEntered(MouseEvent e) {}
     public void mouseExited(MouseEvent e) {}
     public void mouseClicked(MouseEvent e) {
-    	System.out.println("Thou shan't click this token");
+    	if (this.isActive) {
+    		// Since isActive is only ever set by human players, we can do this
+    		((HumanPlayer) this.player).setChosenToken(this);
+    	}
     }
 }

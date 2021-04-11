@@ -19,7 +19,7 @@ public class Game {
 		Color[] playerColors = {Color.YELLOW, Color.CYAN, Color.GREEN, Color.RED};
 		HashMap<Color, Boolean> playerType = new HashMap<Color, Boolean>();
 		playerType.put(playerColors[0], false);
-		playerType.put(playerColors[1], false);
+		playerType.put(playerColors[1], true);
 		playerType.put(playerColors[2], false);
 		playerType.put(playerColors[3], false);
 		

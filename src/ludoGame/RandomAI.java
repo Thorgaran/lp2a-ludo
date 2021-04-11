@@ -16,9 +16,9 @@ public class RandomAI extends Player {
 			Object[] keys = playableTokens.keySet().toArray();
 			chosenToken = (Token) keys[generator.nextInt(keys.length)];
 		}
-		System.out.println("AI is playing...\n-\n-\n-");
+		//System.out.println("AI is playing...\n-\n-\n-");
 		
-		Player.keyboard.nextLine();
+		//Player.keyboard.nextLine();
 		
 		return chosenToken;
 	}

@@ -4,16 +4,45 @@ import java.awt.Color;
 import java.util.*;
 
 public class HumanPlayer extends Player {
+	Token chosenToken;
+	
 	HumanPlayer(Color color, ArrayList<Square> homes) {
 		super(color, homes);
 	}
 	
+	public void setChosenToken(Token token) {
+		this.chosenToken = token;
+	}
+	
 	protected Token chooseToken(HashMap<Token, Square> playableTokens) {
-		Token chosenToken = null;
-		
+		this.chosenToken = null;
 		List<Token> tokenList = new ArrayList<>(playableTokens.keySet());
 		
-		int nbOptions = 0;
+		if (tokenList.isEmpty()) {
+			// Player.keyboard.nextLine();
+		}
+		else {
+			for(Token token: tokenList) {
+				token.setIsActive(true);
+				token.repaint();
+			}
+		
+			while (this.chosenToken == null) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+			}
+			
+			for(Token token: tokenList) {
+				token.setIsActive(false);
+				token.repaint();
+			}
+		}
+		
+		/*int nbOptions = 0;
 		for(Token token: tokenList) {
 			nbOptions++;
 			System.out.print(nbOptions + ": " + (char) (token.getPosition().getCol() + 65) + " " + (token.getPosition().getRow() + 1));
@@ -35,8 +64,8 @@ public class HumanPlayer extends Player {
 			Player.keyboard.nextLine();
 			
 			chosenToken = tokenList.get(chosenOption - 1);
-		}
+		}*/
 		
-		return chosenToken;
+		return this.chosenToken;
 	}
 }
