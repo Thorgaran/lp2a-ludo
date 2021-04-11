@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 public class Board extends JFrame {
 	
 	private static boolean started;
+	static boolean skipped;
 	
 	Board() {
 		super("lp2a-ludo");
@@ -37,6 +38,8 @@ public class Board extends JFrame {
 	    this.setLayout(null);
 	    this.add(start);
 	    this.add(exit);
+	    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	    this.setLocation(dim.width/2 - this.getWidth()/2, dim.height/2 - this.getHeight()/2);
 	    
 	    this.setVisible(true);
 	    
@@ -125,4 +128,26 @@ public class Board extends JFrame {
         dice.setIcon(diceFacesImg[roll-1]);
         dice.repaint();
      }
+	
+	public JButton addSkip(int x, int y) {
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.HORIZONTAL;
+		JButton skip = new JButton(new ImageIcon("skip.png"));
+		skip.setPreferredSize(new Dimension(50, 50));
+		skip.setBorder(BorderFactory.createLineBorder(Color.black));
+		c.gridx = x;
+		c.gridy = y;
+		c.gridheight = 1;
+		c.gridwidth = 1;
+		
+		skip.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Board.skipped = true;
+	    	}
+	    });
+		
+		skip.setVisible(false);
+		this.getContentPane().add(skip, c);
+		return skip;
+	}
 }

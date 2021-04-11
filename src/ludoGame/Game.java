@@ -122,6 +122,20 @@ public class Game {
 		// Close the loop
 		firstSquare.setNextSquare(nextSquare);
 		
+		int[] coordinates={
+			5,
+			5,
+			5,
+			9,
+			9,
+			9,
+			9,
+			5
+		};
+		
+		for(int i = 0;i<8;i+=2) {
+			players.get(playerColors[i/2]).setButton(board.addSkip(coordinates[i], coordinates[i+1]));
+		}
 		
 		board.build();
 		board.diceDisplay(1);

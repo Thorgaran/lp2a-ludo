@@ -19,7 +19,19 @@ public class HumanPlayer extends Player {
 		List<Token> tokenList = new ArrayList<>(playableTokens.keySet());
 		
 		if (tokenList.isEmpty()) {
-			// Player.keyboard.nextLine();
+			Board.skipped = false;
+			this.getButton().setVisible(true);
+			this.getButton().repaint();
+			while (Board.skipped== false) {
+		    	try {
+		    		Thread.sleep(100);
+		    	} catch (InterruptedException e ) {
+		    		e.printStackTrace();
+		    		System.exit(1);
+		    	}
+		    }
+			this.getButton().setVisible(false);
+			this.getButton().repaint();
 		}
 		else {
 			for(Token token: tokenList) {

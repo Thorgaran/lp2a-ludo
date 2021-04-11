@@ -2,12 +2,15 @@ package ludoGame;
 
 import java.awt.Color;
 import java.util.*;
+import javax.swing.*;
 
 public abstract class Player {
 	private Color color;
 	private ArrayList<Square> homeSquares;
 	private Token[] tokens = new Token[4];
 	private boolean hasEaten = false;
+	
+	private JButton button;
 	
 	protected static Scanner keyboard = new Scanner(System.in);
 	
@@ -18,6 +21,13 @@ public abstract class Player {
 		for(int i=0; i<4; i++) {
 			tokens[i] = new Token(this);
 		}
+	}
+	
+	public JButton getButton() {
+		return this.button;
+	}
+	public void setButton(JButton b) {
+		this.button = b;
 	}
 	
 	public ArrayList<Square> getHomeSquares() {
