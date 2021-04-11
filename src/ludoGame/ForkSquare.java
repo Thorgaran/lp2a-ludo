@@ -4,9 +4,14 @@ import java.awt.Color;
 
 public class ForkSquare extends Square {
 	private Square goalRowSquare;
+	private boolean goalRowLocked = true;
 	
-	ForkSquare(Square nextSquare, Color c, int row, int col) {
+	private Direction arrowDir;
+	
+	ForkSquare(Square nextSquare, Color c, int row, int col, Direction arrowDir) {
 		super(nextSquare, SquareType.Fork, c, row, col);
+		
+		this.arrowDir = arrowDir;
 		
 		// Get corresponding goal coordinates
 		switch (row) {
@@ -38,8 +43,20 @@ public class ForkSquare extends Square {
 		this.goalRowSquare = next;
 	}
 	
+	public Direction getArrowDir() {
+		return this.arrowDir;
+	}
+	
 	public Square getGoalRowSquare() {
 		return this.goalRowSquare;
+	}
+	
+	public void unlockGoalRow() {
+		this.goalRowLocked = false;
+	}
+	
+	public boolean isGoalRowLocked() {
+		return this.goalRowLocked;
 	}
 	
 	private int getFurtherFromSeven(int n) {

@@ -43,6 +43,7 @@ public class Board extends JFrame {
 	    
 	    this.setVisible(true);
 	    
+	    // Wait for the user to click "Start game"
 	    while (Board.started== false) {
 	    	try {
 	    		Thread.sleep(100);
@@ -64,7 +65,7 @@ public class Board extends JFrame {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		
 		square.setPreferredSize(new Dimension(50, 50));
-		square.setBorder(BorderFactory.createLineBorder(Color.black));
+		square.setBorder(BorderFactory.createLineBorder(square.getColor().darker()));
 		c.gridx = square.getCol();
 		c.gridy = square.getRow();
 		c.gridheight = 1;
@@ -80,54 +81,6 @@ public class Board extends JFrame {
 		
 		this.setVisible(true);
 	}
-	
-	public void diceDisplay(int roll) {
-		Icon[] diceFacesImg = {
-			new ImageIcon("dice_1.png"),
-			new ImageIcon("dice_2.png"),
-			new ImageIcon("dice_3.png"),
-			new ImageIcon("dice_4.png"),
-			new ImageIcon("dice_5.png"),
-			new ImageIcon("dice_6.png")
-		};
-		JLabel dice = new JLabel();
-		dice.setIcon(diceFacesImg[0]);
-		dice.setVisible(false);
-		GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.HORIZONTAL;
-        dice.setPreferredSize(new Dimension(50, 50));
-        c.gridx = 0;
-        c.gridy = 0;
-        c.gridheight = 1;
-        c.gridwidth = 1;
-        dice.setVisible(true);
-        this.getContentPane().add(dice, c);	
-        this.repaint();
-       try {
-		Thread.sleep(500);
-	} catch (InterruptedException e) {
-		e.printStackTrace();
-		System.exit(1);
-	}
-        dice.setIcon(diceFacesImg[2]);
-        dice.repaint();
-        try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-        dice.setIcon(diceFacesImg[4]);
-        dice.repaint();
-        try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-        dice.setIcon(diceFacesImg[roll-1]);
-        dice.repaint();
-     }
 	
 	public JButton addSkip(int x, int y) {
 		GridBagConstraints c = new GridBagConstraints();

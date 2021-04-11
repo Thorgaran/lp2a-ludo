@@ -115,38 +115,107 @@ public class Square extends JPanel {
 		}
 	}
 	
-	public String toString(int row) {
-		switch (row) {
-		case 0: {
-			StringBuffer str = new StringBuffer(".  ");
-			int i = 0;
-			while (i < this.tokens.size() && i < 3) {
-				str.setCharAt(i, Game.colorToChar(this.tokens.get(i).getColor()));
-				i++;
-			}
-			return str.toString();
+	// Rotates x and y coordinates clockwise a certain number of times depending on dir
+	private int[] rotateCoords(int x, int y, Direction dir) {
+		// Rotate the coordinates 0 to 3 times
+		switch (dir) {
+		case East:
+			int savedX1 = x;
+			x = -y + 50;
+			y = savedX1;
+			
+		case North:
+			int savedX2 = x;
+			x = -y + 50;
+			y = savedX2;
+		
+		case West:
+			int savedX3 = x;
+			x = -y + 50;
+			y = savedX3;
+		
+		case South:
+			break;
 		}
-		case 1: {
-			StringBuffer str = new StringBuffer(this.type.toChar() + "  ");
-			int i = 3;
-			while (i < this.tokens.size() && i < 5) {
-				str.setCharAt(i - 2, Game.colorToChar(this.tokens.get(i).getColor()));
-				i++;
-			}			
-			return str.toString();
-		}
-		default:
-			System.out.println("Error, square string row index too big!");
-			return "";
-		}
+		
+		int[] newCoords = { x, y };
+		return newCoords;
 	}
 	
-	public String toString() {		
-		return this.toString(0) + "\n" + this.toString(1) + "\n" + this.toString(2);
+	private Shape createArrow(Direction arrowDir) {
+		// Coordinates for a south-aiming arrow
+		int[] coords = {
+			27, 4,
+			27, 38,
+			40, 27,
+			40, 32,
+			25, 44,
+			10, 32,
+			10, 27,
+			23, 38,
+			23, 4
+		};
+		
+		Polygon arrow = new Polygon();
+		for(int i=0; i<18; i+=2) {
+			int[] rotatedCoords = this.rotateCoords(coords[i], coords[i+1], arrowDir);
+			arrow.addPoint(rotatedCoords[0], rotatedCoords[1]);
+		}
+		
+		return arrow;
 	}
 	
 	public void paintComponent(Graphics g) {
 		// Propagate painting chain (see https://www.oracle.com/java/technologies/painting.html)
 		super.paintComponent(g);
+		Graphics2D g2d = (Graphics2D) g;
+		
+		if (this.type == SquareType.Safe) {
+			Polygon star = new Polygon();
+			star.addPoint(25, 2);
+			star.addPoint(29, 20);
+			star.addPoint(46, 20);
+			star.addPoint(32, 29);
+			star.addPoint(38, 45);
+			star.addPoint(25, 35);
+			star.addPoint(11, 45);
+			star.addPoint(17, 29);
+			star.addPoint(3, 20);
+			star.addPoint(20, 20);
+			
+			g2d.setColor(Color.WHITE);
+			g2d.fill(star);
+		}
+		else if (this.type == SquareType.Start) {
+			g2d.setColor(Color.WHITE);
+			g2d.fill(this.createArrow(((StartSquare) this).getArrowDir()));
+		}
+		else if (this.type == SquareType.Fork) {
+			ForkSquare forkSquare = (ForkSquare) this;
+			g2d.setColor(this.color);
+			g2d.fill(this.createArrow(forkSquare.getArrowDir()));
+			
+			if (forkSquare.isGoalRowLocked()) {
+				g2d.setColor(Color.GRAY);
+				
+				switch (forkSquare.getArrowDir()) {
+				case East:
+					g2d.fillRect(44, 0, 6, 50);
+					break;
+					
+				case North:
+					g2d.fillRect(0, 0, 50, 6);
+					break;
+				
+				case West:
+					g2d.fillRect(0, 0, 6, 50);
+					break;
+				
+				case South:
+					g2d.fillRect(0, 44, 50, 6);
+					break;
+				}
+			}
+		}
 	}
 }

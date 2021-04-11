@@ -20,9 +20,11 @@ public class HumanPlayer extends Player {
 		
 		if (tokenList.isEmpty()) {
 			Board.skipped = false;
+			
 			this.getButton().setVisible(true);
 			this.getButton().repaint();
-			while (Board.skipped== false) {
+			
+			while (!Board.skipped) {
 		    	try {
 		    		Thread.sleep(100);
 		    	} catch (InterruptedException e ) {
@@ -30,6 +32,7 @@ public class HumanPlayer extends Player {
 		    		System.exit(1);
 		    	}
 		    }
+			
 			this.getButton().setVisible(false);
 			this.getButton().repaint();
 		}
@@ -53,30 +56,6 @@ public class HumanPlayer extends Player {
 				token.repaint();
 			}
 		}
-		
-		/*int nbOptions = 0;
-		for(Token token: tokenList) {
-			nbOptions++;
-			System.out.print(nbOptions + ": " + (char) (token.getPosition().getCol() + 65) + " " + (token.getPosition().getRow() + 1));
-			System.out.println(token.isBlockBase() ? " (block)" : "");
-		}
-		
-		for(int i = nbOptions; i < 4; i++) {
-			System.out.println("-");
-		}
-		
-		if (nbOptions == 0) {
-			Player.keyboard.nextLine();
-		}
-		else {
-			int chosenOption;
-			do {
-				chosenOption = Player.keyboard.nextInt();
-			} while (chosenOption <= 0 || chosenOption > nbOptions);
-			Player.keyboard.nextLine();
-			
-			chosenToken = tokenList.get(chosenOption - 1);
-		}*/
 		
 		return this.chosenToken;
 	}

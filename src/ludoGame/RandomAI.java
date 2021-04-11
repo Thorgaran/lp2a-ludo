@@ -16,9 +16,13 @@ public class RandomAI extends Player {
 			Object[] keys = playableTokens.keySet().toArray();
 			chosenToken = (Token) keys[generator.nextInt(keys.length)];
 		}
-		//System.out.println("AI is playing...\n-\n-\n-");
 		
-		//Player.keyboard.nextLine();
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 		
 		return chosenToken;
 	}

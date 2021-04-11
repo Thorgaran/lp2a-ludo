@@ -85,7 +85,19 @@ public abstract class Player {
 					eatenToken.move(homeSquare);
 					homeSquare.repaint();
 				}
-				this.hasEaten = true;
+				
+				// If the player is eating for the first time, remove the fork barrier
+				if (!this.hasEaten) {
+					this.hasEaten = true;
+					
+					Square forkSquare = this.homeSquares.get(0);
+					for(int i=0; i<51; i++) {
+						forkSquare = forkSquare.getNextSquare();
+					}
+					
+					((ForkSquare) forkSquare).unlockGoalRow();
+					forkSquare.repaint();
+				}
 			}
 			
 			// This needs to be checked before moving the token

@@ -23,16 +23,10 @@ public class Token extends JPanel implements MouseListener {
 		this.position = p.getEmptyHomeSquare();
 		this.position.addToken(this);
 		
-		//Add mouse Listener
         this.addMouseListener(this);
-                
-        //Set size to make sure that the whole token is shown
-        //this.setMinimumSize(new Dimension(20, 15));
-        //this.setPreferredSize(new Dimension(20, 15));
-        //this.setMaximumSize(new Dimension(20, 15));
+        // Set size to make sure that the whole token is shown
         this.setSize(42, 19);
-
-
+        // Set the token background to be transparent
         this.setOpaque(false);
 	}
 	
@@ -118,10 +112,14 @@ public class Token extends JPanel implements MouseListener {
 				// Test if the token fulfills all conditions to enter the goal row
 				if (toReturn.getType() == SquareType.Fork && 
 					toReturn.getColor() == this.getColor() &&
-					this.getPlayer().hasEaten() &&
-					!this.isBlockBase())
+					this.getPlayer().hasEaten())
 				{
-					toReturn = ((ForkSquare) toReturn).getGoalRowSquare();
+					if (this.isBlockBase()) {
+						return null;
+					}
+					else {
+						toReturn = ((ForkSquare) toReturn).getGoalRowSquare();
+					}
 				} else {
 					toReturn = toReturn.getNextSquare();
 				}
@@ -173,6 +171,7 @@ public class Token extends JPanel implements MouseListener {
 		g2d.drawOval(0, 0, 41, 11);
 		
 		if (this.isActive) {
+			// If the user can select this token, draw a white cross on its side
 			g2d.setColor(Color.WHITE);
 			g2d.drawLine(12, 12, 29, 17);
 			g2d.drawLine(12, 17, 29, 12);

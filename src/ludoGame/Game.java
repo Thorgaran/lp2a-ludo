@@ -13,7 +13,9 @@ import javax.swing.JFrame;
 
 public class Game {
 	LinkedHashMap<Color, Player> players = new LinkedHashMap<Color, Player>();
-	private Dice dice = new Dice();
+	private Dice dice;
+	
+	private Board board; 
 	
 	Game() {
 		Color[] playerColors = {Color.YELLOW, Color.CYAN, Color.GREEN, Color.RED};
@@ -59,27 +61,36 @@ public class Game {
 			new SquareInitData(SquareType.Home, 3, 3),
 		};
 		
+		HashMap<Color, Direction> arrowDirs = new HashMap<Color, Direction>();
+		arrowDirs.put(playerColors[0], Direction.East);
+		arrowDirs.put(playerColors[1], Direction.North);
+		arrowDirs.put(playerColors[2], Direction.West);
+		arrowDirs.put(playerColors[3], Direction.South);
+		
 		// This firstSquare variable is used later on to close the loop
 		boolean isFirstSquare = true;
 		Square firstSquare = null;
 		
 		// Build the board
-		Board board = new Board();
+		this.board = new Board();
 		Square nextSquare = null;
 		
 		for(Color color: playerColors) {
 			for(SquareInitData pathData: path) {				
 				// Create the next square in counterclockwise order
 				if (pathData.type == SquareType.Fork) {
-					nextSquare = new ForkSquare(nextSquare, color, pathData.row, pathData.col);
+					nextSquare = new ForkSquare(nextSquare, color, pathData.row, pathData.col, arrowDirs.get(color));
 					
 					// Travel the home row to add squares in the board
 					Square goalRowSquare = ((ForkSquare) nextSquare).getGoalRowSquare();
 					
 					while (goalRowSquare != null) {
-						board.addSquare(goalRowSquare);
+						this.board.addSquare(goalRowSquare);
 						goalRowSquare = goalRowSquare.getNextSquare();
 					}
+				}
+				else if (pathData.type == SquareType.Start) {
+					nextSquare = new StartSquare(nextSquare, color, pathData.row, pathData.col, arrowDirs.get(color));
 				}
 				else {
 					nextSquare = new Square(nextSquare, pathData.type, color, pathData.row, pathData.col);
@@ -96,15 +107,17 @@ public class Game {
 					for(SquareInitData homeData: home) {
 						Square homeSquare = new Square(nextSquare, homeData.type, color, homeData.row, homeData.col);
 						homes.add(homeSquare);
-						board.addSquare(homeSquare);
+						this.board.addSquare(homeSquare);
 					}
 					
-					Player player = (playerType.get(color)) ? new HumanPlayer(color, homes) : new RandomAI(color, homes);
+					Player player = (playerType.get(color)) 
+						? new HumanPlayer(color, homes) 
+						: new RandomAI(color, homes);
 					players.put(color, player);
 				}
 				
 				// Add the square in the board
-				board.addSquare(nextSquare);
+				this.board.addSquare(nextSquare);
 				
 				// Prepare the position for the next quadrant
 				int[] newPathPos = this.rotatePos(pathData.row, pathData.col);
@@ -122,76 +135,22 @@ public class Game {
 		// Close the loop
 		firstSquare.setNextSquare(nextSquare);
 		
+		// Create the skip buttons
 		int[] coordinates={
-			5,
-			5,
-			5,
-			9,
-			9,
-			9,
-			9,
-			5
+			5, 5,
+			5, 9,
+			9, 9,
+			9, 5
 		};
 		
-		for(int i = 0;i<8;i+=2) {
-			players.get(playerColors[i/2]).setButton(board.addSkip(coordinates[i], coordinates[i+1]));
+		for(int i = 0; i<8; i+=2) {
+			players.get(playerColors[i/2]).setButton(this.board.addSkip(coordinates[i], coordinates[i+1]));
 		}
 		
-		board.build();
-		board.diceDisplay(1);
-	}
-	
-	public void printBoard() {
-		Square[][] board = new Square[15][15];
+		// Create the dice and its displays
+		this.dice = new Dice(this.board, this.players.values());
 		
-		Square startSquare = this.players.get(Color.RED).getStartSquare();
-		Square curSquare = startSquare;
-		
-		do {
-			// If the current square is a fork, travel its associated goal row
-			if (curSquare.getType() == SquareType.Fork) {
-				// We now know curSquare is a fork, thus we can tell the compiler to consider curSquare as a ForkSquare
-				Square goalRowSquare = ((ForkSquare) curSquare).getGoalRowSquare();
-				
-				for(int i=0; i<6; i++) {
-					board[goalRowSquare.getRow()][goalRowSquare.getCol()] = goalRowSquare;
-					goalRowSquare = goalRowSquare.getNextSquare();
-				}
-			}
-			else if (curSquare.getType() == SquareType.Start) {
-				for(Square homeSquare: this.players.get(curSquare.getColor()).getHomeSquares()) {
-					board[homeSquare.getRow()][homeSquare.getCol()] = homeSquare;
-				}
-			}
-			
-			board[curSquare.getRow()][curSquare.getCol()] = curSquare;
-			
-			curSquare = curSquare.getNextSquare();
-		} while (curSquare != startSquare);
-		
-		System.out.println("    A  B  C  D  E  F  G  H  I  J  K  L  M  N  O");
-		int nbRow = 1;
-		for(Square[] row: board) {
-			for (int subRow = 0; subRow < 2; subRow++) {
-				if (subRow == 0) {
-					System.out.printf("%2d  ", nbRow);
-				}
-				else {
-					System.out.print("    ");
-				}
-				
-				for(Square square: row) {
-					if (square == null) {
-						System.out.print("   ");
-					}
-					else {
-						System.out.print(square.toString(subRow));
-					}
-				}
-				System.out.println();
-			}
-			nbRow++;
-		} 
+		this.board.build();
 	}
 	
 	// Transforms a row and a column to the same position in the next quadrant
@@ -209,13 +168,8 @@ public class Game {
 		int consecutiveTurns=1;
 		
 		do {
-			this.printBoard();
-
 			diceResult=this.dice.roll();
-			this.dice.dispFace();
-				
-			System.out.println("Current player: " + Game.colorToString(p.getColor()));
-			System.out.println("Has eaten: " + p.hasEaten());
+			this.dice.dispFace(p.getColor());
 			
 			if (diceResult == 6 && consecutiveTurns == 3) { break; }
 			
@@ -247,13 +201,13 @@ public class Game {
 		
 		System.out.println(Game.colorToString(l.get(0)) + " player rolls the dice:");
 		bestRoll = this.dice.roll();
-		this.dice.dispFace();
+		//this.dice.dispFace();
 		
 		for(int i=1; i<4; i++){
 			do {
 			System.out.println(Game.colorToString(l.get(i)) + " player rolls the dice:");
 			newRoll = this.dice.roll();
-			this.dice.dispFace();
+			//this.dice.dispFace();
 			if (newRoll == bestRoll) {
 				System.out.println("Draw! Please roll again!");
 			}
@@ -280,10 +234,6 @@ public class Game {
 			System.out.println("Illegal player color!");
 			return "?";
 		}
-	}
-	
-	public static char colorToChar(Color color) {
-		return Game.colorToString(color).charAt(0);
 	}
 
 	public static void main(String[] args) {

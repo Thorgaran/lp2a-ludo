@@ -1,36 +1,75 @@
 package ludoGame;
 
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class Dice {
 	private int number;
 	
-	Dice() {
-		this.number = 0;
+	private Icon[] diceFacesImg = {
+			new ImageIcon("dice_1.png"),
+			new ImageIcon("dice_2.png"),
+			new ImageIcon("dice_3.png"),
+			new ImageIcon("dice_4.png"),
+			new ImageIcon("dice_5.png"),
+			new ImageIcon("dice_6.png")
+	};
+	private HashMap<Color, JLabel> dispDices = new HashMap<Color, JLabel>();
+	
+	Dice(Board board, Collection<Player> players) {
+		this.number = this.roll();
+		
+		for(Player player: players) {
+			JLabel dispDice = new JLabel();
+			dispDice.setVisible(false);
+			
+			// Get the coordinates of the square in the middle of the four homes
+			int row = 0;
+			int col = 0;
+			for(Square home: player.getHomeSquares()) {
+				row += home.getRow();
+				col += home.getCol();
+			}
+			row = row / 4;
+			col = col / 4;
+			
+			GridBagConstraints c = new GridBagConstraints();
+	        c.fill = GridBagConstraints.HORIZONTAL;
+	        dispDice.setPreferredSize(new Dimension(50, 50));
+	        c.gridx = col;
+	        c.gridy = row;
+	        c.gridheight = 1;
+	        c.gridwidth = 1;
+			
+	        board.add(dispDice, c);
+			this.dispDices.put(player.getColor(), dispDice);
+		}
 	}
 	
 	public int roll() {
+		// Get a random int between 1 and 6
 		this.number = ThreadLocalRandom.current().nextInt(1, 7);
+		
 		return this.number;
 	}
 	
-	public int dispFace() {
-		// To print the dice once the graphical interface is made
-		switch (this.number) {
-		case 1: System.out.println("Dice: 1");
-			break;
-		case 2: System.out.println("Dice: 2");
-			break;
-		case 3: System.out.println("Dice: 3");
-			break;
-		case 4: System.out.println("Dice: 4");
-			break;
-		case 5: System.out.println("Dice: 5");
-			break;
-		case 6: System.out.println("Dice: 6");
-			break;
-		default: System.out.println("Error: dice was not rolled yet");
+	public void dispFace(Color playerColor) {
+		// Hide previously visible dice
+		for(JLabel dispDice: this.dispDices.values()) {
+			if (dispDice.isVisible()) {
+				dispDice.setVisible(false);
+				dispDice.repaint();
+			}
 		}
-		return this.number;
+		
+		JLabel dispDice = this.dispDices.get(playerColor);
+		
+		// Show new dice
+		dispDice.setIcon(diceFacesImg[this.number-1]);
+		dispDice.setVisible(true);
+		dispDice.repaint();
 	}
 }
