@@ -11,7 +11,7 @@ public class Game {
 	private Dice dice = new Dice();
 	
 	Game() throws InterruptedException {
-		Color[] playerColors = {Color.YELLOW, Color.BLUE, Color.GREEN, Color.RED};
+		Color[] playerColors = {Color.YELLOW, Color.CYAN, Color.GREEN, Color.RED};
 		HashMap<Color, Boolean> playerType = new HashMap<Color, Boolean>();
 		playerType.put(playerColors[0], false);
 		playerType.put(playerColors[1], false);
@@ -72,7 +72,7 @@ public class Game {
 					Square goalRowSquare = ((ForkSquare) nextSquare).getGoalRowSquare();
 					
 					while (goalRowSquare != null) {
-						goalRowSquare.setDisplayedSquare(board.addSquare(goalRowSquare));
+						board.addSquare(goalRowSquare);
 						goalRowSquare = goalRowSquare.getNextSquare();
 					}
 				}
@@ -91,7 +91,7 @@ public class Game {
 					for(SquareInitData homeData: home) {
 						Square homeSquare = new Square(nextSquare, homeData.type, color, homeData.row, homeData.col);
 						homes.add(homeSquare);
-						homeSquare.setDisplayedSquare(board.addSquare(homeSquare));
+						board.addSquare(homeSquare);
 					}
 					
 					Player player = (playerType.get(color)) ? new HumanPlayer(color, homes) : new RandomAI(color, homes);
@@ -99,7 +99,7 @@ public class Game {
 				}
 				
 				// Add the square in the board
-				nextSquare.setDisplayedSquare(board.addSquare(nextSquare));
+				board.addSquare(nextSquare);
 				
 				// Prepare the position for the next quadrant
 				int[] newPathPos = this.rotatePos(pathData.row, pathData.col);
@@ -207,7 +207,7 @@ public class Game {
 	}
 	
 	public void play() {
-		List<Color> turnOrder = new ArrayList<Color>(Arrays.asList(Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW)); 
+		List<Color> turnOrder = new ArrayList<Color>(Arrays.asList(Color.RED, Color.GREEN, Color.CYAN, Color.YELLOW)); 
 		Color currentColor = this.starter(turnOrder); 
 		
 		while (turnOrder.size() > 1) {
@@ -253,7 +253,7 @@ public class Game {
 			return "Red";
 		} else if (color == Color.GREEN) {
 			return "Green";
-		} else if (color == Color.BLUE) {
+		} else if (color == Color.CYAN) {
 			return "Blue";
 		} else  if (color == Color.YELLOW) {
 			return "Yellow";

@@ -1,9 +1,11 @@
 package ludoGame;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
-public class Square {
+import javax.swing.*;
+import java.awt.*;
+
+public class Square extends JPanel {
 	private Square nextSquare;
 	private Color color; // This color represents the quadrant the square is in
 	private ArrayList<Token> tokens = new ArrayList<Token>(); // List of tokens starts out as empty
@@ -12,14 +14,22 @@ public class Square {
 	private int row;
 	private int col;
 	
-	private DisplayedSquare dispSquare;
-	
-	Square(Square nextSquare, SquareType t, Color c, int row, int col) {
+	Square(Square nextSquare, SquareType type, Color color, int row, int col) {
 		this.nextSquare = nextSquare;
-		this.type = t;
-		this.color = c;
+		this.type = type;
+		this.color = color;
 		this.row = row;
 		this.col = col;
+		
+		this.setLayout(null);
+		
+		if (type == SquareType.Normal || type == SquareType.Fork) {
+			this.setBackground(Color.WHITE);
+		}
+		else {
+			this.setBackground(color);
+		}
+
 	}
 	
 	Square() {
@@ -36,10 +46,12 @@ public class Square {
 	
 	public void addToken(Token token) {
 		this.tokens.add(token);
+		this.add(token, 0);
 	}
 	
 	public void removeToken(Token token) {
 		this.tokens.remove(token);
+		this.remove(token);
 	}
 	
 	public ArrayList<Token> getTokens() {
@@ -64,10 +76,6 @@ public class Square {
 	
 	public int getCol() {
 		return this.col;
-	}
-	
-	public void setDisplayedSquare(DisplayedSquare dispSquare) {
-		this.dispSquare = dispSquare;
 	}
 	
 	// Returns true if that square prevents tokens from going past
@@ -107,10 +115,6 @@ public class Square {
 		}
 	}
 	
-	public void repaint() {
-		this.dispSquare.repaint();
-	}
-	
 	public String toString(int row) {
 		switch (row) {
 		case 0: {
@@ -139,5 +143,10 @@ public class Square {
 	
 	public String toString() {		
 		return this.toString(0) + "\n" + this.toString(1) + "\n" + this.toString(2);
+	}
+	
+	public void paintComponent(Graphics g) {
+		// Propagate painting chain (see https://www.oracle.com/java/technologies/painting.html)
+		super.paintComponent(g);
 	}
 }

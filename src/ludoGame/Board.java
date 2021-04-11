@@ -12,20 +12,17 @@ public class Board extends JFrame {
 		this.getContentPane().setLayout(new GridBagLayout());
 	}
 	
-	public DisplayedSquare addSquare(Square square) {
+	public void addSquare(Square square) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
 		
-		DisplayedSquare dispSquare = new DisplayedSquare(square);
-		dispSquare.setPreferredSize(new Dimension(50, 50));
-		dispSquare.setBorder(BorderFactory.createLineBorder(Color.black));
+		square.setPreferredSize(new Dimension(50, 50));
+		square.setBorder(BorderFactory.createLineBorder(Color.black));
 		c.gridx = square.getCol();
 		c.gridy = square.getRow();
 		c.gridheight = 1;
 		c.gridwidth = 1;
-		this.getContentPane().add(dispSquare, c);
-		
-		return dispSquare;
+		this.getContentPane().add(square, c);
 	}
 	
 	public void build() {
@@ -59,14 +56,14 @@ public class Board extends JFrame {
         dice.setVisible(true);
         this.getContentPane().add(dice, c);	
         this.repaint();
-        Thread.sleep(500);
+        /*Thread.sleep(500);
         dice.setIcon(diceFacesImg[2]);
         dice.repaint();
         Thread.sleep(500);
         dice.setIcon(diceFacesImg[4]);
         dice.repaint();
         Thread.sleep(500);
-        dice.setIcon(diceFacesImg[roll-1]);
+        dice.setIcon(diceFacesImg[roll-1]);*/
         dice.repaint();
      }
 }
