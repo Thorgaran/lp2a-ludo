@@ -1,16 +1,21 @@
 package ludoGame;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
+import java.awt.*;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
 public class Game {
 	LinkedHashMap<Color, Player> players = new LinkedHashMap<Color, Player>();
 	private Dice dice = new Dice();
 	
-	Game() throws InterruptedException {
+	Game() {
 		Color[] playerColors = {Color.YELLOW, Color.CYAN, Color.GREEN, Color.RED};
 		HashMap<Color, Boolean> playerType = new HashMap<Color, Boolean>();
 		playerType.put(playerColors[0], false);
@@ -267,9 +272,8 @@ public class Game {
 		return Game.colorToString(color).charAt(0);
 	}
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) {
 		Game game = new Game();
-		
 		game.play();
 	}
 
