@@ -75,10 +75,9 @@ public class Dice {
 		dispDice.repaint();
 	}
 	
-	//to optimize the medal display, we use the dice LLabel that won't be used anymore to display the medal
-	//displayed medal depends on the ranking
-	public void changeToMedal(Color playerColor,int ranking) {
-		
+	// To optimize the medal display, we use the dice JLabel that won't be used anymore to display the medal
+	// Displayed medal depends on the ranking
+	public void changeToMedal(Color playerColor, int ranking) {
 		JLabel medal = this.dispDices.get(playerColor);
 		this.dispDices.remove(playerColor);
 		

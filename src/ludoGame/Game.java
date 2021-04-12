@@ -1,24 +1,20 @@
 package ludoGame;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.*;
-import java.util.List;
-import java.awt.*;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
 
 public class Game {
+	// Define game colors only once here, from north west to north east
+	public static Color NW_COLOR = new Color(255, 245, 0);
+	public static Color SW_COLOR = Color.CYAN;
+	public static Color SE_COLOR = Color.GREEN;
+	public static Color NE_COLOR = Color.RED;
+	
 	LinkedHashMap<Color, Player> players = new LinkedHashMap<Color, Player>();
 	private Dice dice;
 	
-	private Board board; 
-	
-	Game() {
-		Color[] playerColors = {Color.YELLOW, Color.CYAN, Color.GREEN, Color.RED};
+	Game(Board board) {
+		Color[] playerColors = {Game.NW_COLOR, Game.SW_COLOR, Game.SE_COLOR, Game.NE_COLOR};
 		HashMap<Color, Boolean> playerType = new HashMap<Color, Boolean>();
 		playerType.put(playerColors[0], false);
 		playerType.put(playerColors[1], false);
@@ -72,7 +68,6 @@ public class Game {
 		Square firstSquare = null;
 		
 		// Build the board
-		this.board = new Board();
 		Square nextSquare = null;
 		
 		for(Color color: playerColors) {
@@ -85,7 +80,7 @@ public class Game {
 					Square goalRowSquare = ((ForkSquare) nextSquare).getGoalRowSquare();
 					
 					while (goalRowSquare != null) {
-						this.board.addSquare(goalRowSquare);
+						board.addSquare(goalRowSquare);
 						goalRowSquare = goalRowSquare.getNextSquare();
 					}
 				}
@@ -107,7 +102,7 @@ public class Game {
 					for(SquareInitData homeData: home) {
 						Square homeSquare = new Square(nextSquare, homeData.type, color, homeData.row, homeData.col);
 						homes.add(homeSquare);
-						this.board.addSquare(homeSquare);
+						board.addSquare(homeSquare);
 					}
 					
 					Player player = (playerType.get(color)) 
@@ -117,7 +112,7 @@ public class Game {
 				}
 				
 				// Add the square in the board
-				this.board.addSquare(nextSquare);
+				board.addSquare(nextSquare);
 				
 				// Prepare the position for the next quadrant
 				int[] newPathPos = this.rotatePos(pathData.row, pathData.col);
@@ -144,13 +139,13 @@ public class Game {
 		};
 		
 		for(int i = 0; i<8; i+=2) {
-			players.get(playerColors[i/2]).setButton(this.board.addSkip(coordinates[i], coordinates[i+1]));
+			players.get(playerColors[i/2]).setButton(board.addSkip(coordinates[i], coordinates[i+1]));
 		}
 		
 		// Create the dice and its displays
-		this.dice = new Dice(this.board, this.players.values());
-		
-		this.board.build();
+		this.dice = new Dice(board, this.players.values());
+
+		//board.repaint();
 	}
 	
 	// Transforms a row and a column to the same position in the next quadrant
@@ -180,7 +175,9 @@ public class Game {
 	}
 	
 	public void play() {
-		List<Color> turnOrder = new ArrayList<Color>(Arrays.asList(Color.RED, Color.GREEN, Color.CYAN, Color.YELLOW)); 
+		List<Color> turnOrder = new ArrayList<Color>(Arrays.asList(
+			Game.NE_COLOR, Game.SE_COLOR, Game.SW_COLOR, Game.NW_COLOR
+		)); 
 		Color currentColor = this.starter(turnOrder); 
 		
 		while (turnOrder.size() > 1) {
@@ -224,13 +221,13 @@ public class Game {
 	}
 	
 	public static String colorToString(Color color) {
-		if (color == Color.RED) {
+		if (color == Game.NE_COLOR) {
 			return "Red";
-		} else if (color == Color.GREEN) {
+		} else if (color == Game.SE_COLOR) {
 			return "Green";
-		} else if (color == Color.CYAN) {
+		} else if (color == Game.SW_COLOR) {
 			return "Blue";
-		} else  if (color == Color.YELLOW) {
+		} else  if (color == Game.NW_COLOR) {
 			return "Yellow";
 		} else {
 			System.out.println("Illegal player color!");
@@ -239,7 +236,13 @@ public class Game {
 	}
 
 	public static void main(String[] args) {
-		Game game = new Game();
+		Window window = new Window();
+		
+		Board board = window.setupBoard();
+		
+		Game game = new Game(board);
+		window.rebuild();
+		
 		game.play();
 	}
 
