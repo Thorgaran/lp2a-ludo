@@ -53,6 +53,8 @@ public class Dice {
 		// Get a random int between 1 and 6
 		this.number = ThreadLocalRandom.current().nextInt(1, 7);
 		
+		//this.number = Player.keyboard.nextInt();
+		
 		return this.number;
 	}
 	

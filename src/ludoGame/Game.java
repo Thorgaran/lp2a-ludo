@@ -20,10 +20,10 @@ public class Game {
 	Game() {
 		Color[] playerColors = {Color.YELLOW, Color.CYAN, Color.GREEN, Color.RED};
 		HashMap<Color, Boolean> playerType = new HashMap<Color, Boolean>();
-		playerType.put(playerColors[0], false);
+		playerType.put(playerColors[0], true);
 		playerType.put(playerColors[1], true);
-		playerType.put(playerColors[2], false);
-		playerType.put(playerColors[3], false);
+		playerType.put(playerColors[2], true);
+		playerType.put(playerColors[3], true);
 		
 		// This class is basically a struct only used for the board creation
 		class SquareInitData {

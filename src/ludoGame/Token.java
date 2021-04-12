@@ -153,7 +153,24 @@ public class Token extends JPanel implements MouseListener {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
 		
-		this.setLocation(4, 29 - 8*this.getTokHeight());
+		// If there are more than 4 tokens on a square, display them smaller
+		int squashHeight = 8;
+		if (this.position.nbTokens() > 12) {
+			squashHeight = 1;
+		}
+		else if (this.position.nbTokens() > 7) {
+			squashHeight = 2;
+		}
+		else if (this.position.nbTokens() > 4) {
+			squashHeight = 4;
+		}
+
+		if (this.height + 1 == this.position.nbTokens()) {
+			this.setLocation(4, 21 - squashHeight*(this.getTokHeight() - 1));
+		}
+		else {
+			this.setLocation(4, 29 - squashHeight*this.getTokHeight());
+		}
 		
 		g2d.setColor(this.getColor().darker());
 		g2d.fillRect(0, 7, 41, 7);
