@@ -74,4 +74,25 @@ public class Dice {
 		dispDice.setVisible(true);
 		dispDice.repaint();
 	}
+	
+	//to optimize the medal display, we use the dice LLabel that won't be used anymore to display the medal
+	//displayed medal depends on the ranking
+	public void changeToMedal(Color playerColor,int ranking) {
+		
+		JLabel medal = this.dispDices.get(playerColor);
+		this.dispDices.remove(playerColor);
+		
+		switch (ranking) {
+			case 1: medal.setIcon(new ImageIcon("gold_medal.png"));
+			break;
+			case 2: medal.setIcon(new ImageIcon("silver_medal.png"));
+			break;
+			case 3: medal.setIcon(new ImageIcon("bronze_medal.png"));
+			break;
+			default: System.out.println("Unavailable ranking");
+		}
+
+		medal.setVisible(true);
+		medal.repaint();
+	}
 }

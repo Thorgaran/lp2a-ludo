@@ -82,6 +82,7 @@ public class Board extends JFrame {
 		this.setVisible(true);
 	}
 	
+	//adds a skip button at the given coordinates linked to the skipped variable
 	public JButton addSkip(int x, int y) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
