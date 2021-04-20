@@ -1,13 +1,25 @@
 package ludoGame;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 
 public class Board extends JPanel {
 	static boolean skipped;
+	private Image backgroundImage;
+	private int SQUARE_SIZE = 50;
 	
 	Board() {
+		Image toResize = null;
+		try {
+			toResize = ImageIO.read(new File("background.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		    System.exit(1);
+		}
+		this.backgroundImage = toResize.getScaledInstance(SQUARE_SIZE*15, SQUARE_SIZE*15, Image.SCALE_SMOOTH);
 		this.setLayout(new GridBagLayout());
 	}
 	
@@ -15,7 +27,7 @@ public class Board extends JPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
 		
-		square.setPreferredSize(new Dimension(50, 50));
+		square.setPreferredSize(new Dimension(SQUARE_SIZE, SQUARE_SIZE));
 		square.setBorder(BorderFactory.createLineBorder(square.getColor().darker()));
 		c.gridx = square.getCol();
 		c.gridy = square.getRow();
@@ -29,7 +41,7 @@ public class Board extends JPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
 		JButton skip = new JButton(new ImageIcon("skip.png"));
-		skip.setPreferredSize(new Dimension(50, 50));
+		skip.setPreferredSize(new Dimension(SQUARE_SIZE, SQUARE_SIZE));
 		skip.setBorder(BorderFactory.createLineBorder(Color.black));
 		c.gridx = x;
 		c.gridy = y;
@@ -46,4 +58,12 @@ public class Board extends JPanel {
 		this.add(skip, c);
 		return skip;
 	}
+		
+	  public void paintComponent(Graphics g) {
+		    // Propagate painting chain (see https://www.oracle.com/java/technologies/painting.html)
+		    super.paintComponent(g);
+		    Graphics2D g2d = (Graphics2D) g;
+		    
+		    g.drawImage(backgroundImage,0,0,this); 
+		}
 }
