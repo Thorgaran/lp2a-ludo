@@ -16,10 +16,15 @@ public class Game {
 	Game(Board board) {
 		Color[] playerColors = {Game.NW_COLOR, Game.SW_COLOR, Game.SE_COLOR, Game.NE_COLOR};
 		HashMap<Color, Boolean> playerType = new HashMap<Color, Boolean>();
-		playerType.put(playerColors[0], false);
-		playerType.put(playerColors[1], false);
-		playerType.put(playerColors[2], false);
-		playerType.put(playerColors[3], false);
+		//initializing the proper number of players and AIs
+		for (int i=0;i<Window.playerCount;i++) {
+			//human players
+			playerType.put(playerColors[i], true);
+		}
+		for (int i=Window.playerCount;i<4;i++) {
+			//AIs
+			playerType.put(playerColors[i], false);
+		}
 		
 		// This class is basically a struct only used for the board creation
 		class SquareInitData {
