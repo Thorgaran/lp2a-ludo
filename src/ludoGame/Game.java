@@ -168,8 +168,9 @@ public class Game {
 		int consecutiveTurns=1;
 		
 		do {
-			diceResult=this.dice.roll();
-			this.dice.dispFace(p.getColor());
+			diceResult = this.dice.roll();
+			this.dice.hideDices();
+			this.dice.dispFace(p.getColor(), p instanceof HumanPlayer);
 			
 			if (diceResult == 6 && consecutiveTurns == 3) { break; }
 			
@@ -183,7 +184,7 @@ public class Game {
 		List<Color> turnOrder = new ArrayList<Color>(Arrays.asList(
 			Game.NE_COLOR, Game.SE_COLOR, Game.SW_COLOR, Game.NW_COLOR
 		)); 
-		Color currentColor = this.starter(turnOrder); 
+		Color currentColor = this.startingPlayer(turnOrder); 
 		
 		while (turnOrder.size() > 1) {
 			this.playerTurn(this.players.get(currentColor));
@@ -199,30 +200,49 @@ public class Game {
 		System.out.println("Game ended!");
 	}
 
-	public Color starter(List<Color> l) {
-		Color toReturn = Color.RED;
-		int bestRoll, newRoll;
+	public Color startingPlayer(List<Color> playerColors) {
+		LinkedHashMap<Color, Integer> colorsWithThrow = new LinkedHashMap<Color, Integer>();
 		
-		System.out.println(Game.colorToString(l.get(0)) + " player rolls the dice:");
-		bestRoll = this.dice.roll();
-		//this.dice.dispFace();
-		
-		for(int i=1; i<4; i++){
-			do {
-			System.out.println(Game.colorToString(l.get(i)) + " player rolls the dice:");
-			newRoll = this.dice.roll();
-			//this.dice.dispFace();
-			if (newRoll == bestRoll) {
-				System.out.println("Draw! Please roll again!");
-			}
-			} while (newRoll == bestRoll);
-			if (newRoll>bestRoll) {
-				bestRoll = newRoll;
-				toReturn = l.get(i);
-			}
+		// Initialization of the colors in the hashmap is needed
+		for(Color color: playerColors) {
+			colorsWithThrow.put(color, null);
 		}
-		System.out.println(Game.colorToString(toReturn) + " begins!");
-		return toReturn;
+		
+		while (colorsWithThrow.size() != 1) {
+			// Have the remaining players throw their dices
+			for(Color color: colorsWithThrow.keySet()) {
+				colorsWithThrow.put(color, this.dice.roll());
+				this.dice.dispFace(color, true);
+			}
+			
+			// Get the biggest throw value
+			int biggestThrow = Collections.max(colorsWithThrow.values());
+			
+			// Remove any players under this value
+			// Using an iterator here is instead of a for loop is 
+			// needed to avoid a ConcurrentModificationException
+			Iterator<Map.Entry<Color, Integer>> it = colorsWithThrow.entrySet().iterator();
+			while(it.hasNext()) {
+				Map.Entry<Color, Integer> entry = it.next();
+				if (entry.getValue() < biggestThrow) {
+					it.remove();
+				}
+			}
+			
+			// Add some wait time for the user to see who has the highest throw
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+			
+			// Hide all dices
+			this.dice.hideDices();
+		}
+		
+		// Return the first player's color
+		return colorsWithThrow.keySet().iterator().next();
 	}
 	
 	public static String colorToString(Color color) {
