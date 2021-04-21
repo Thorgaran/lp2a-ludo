@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Board extends JPanel {
 	public static int SQUARE_SIZE = 50;
@@ -14,8 +15,15 @@ public class Board extends JPanel {
 	
 	Board() {
 		Image toResize = null;
+		int background = ThreadLocalRandom.current().nextInt(1, 3);
+		String chosenBG;
+		switch (background) {
+			case 1: chosenBG = "background.png";
+			break;
+			default: chosenBG = "background2.png";
+		}
 		try {
-			toResize = ImageIO.read(new File("background.png"));
+			toResize = ImageIO.read(new File(chosenBG));
 		} catch (IOException e) {
 			e.printStackTrace();
 		    System.exit(1);
