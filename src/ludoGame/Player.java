@@ -72,7 +72,14 @@ public abstract class Player {
 			}
 		}
 		
+		if (playableTokens.isEmpty()) {
+			Game.setInfoText(Game.colorToString(this.color) + " cannot play and has to pass");
+		}
+		else {
+			Game.setInfoText(Game.colorToString(this.color) + " must select a token");
+		}
 		Token chosenToken = this.chooseToken(playableTokens);
+		
 		if (chosenToken != null) {
 			Square startSquare = chosenToken.getPosition();
 			Square destSquare = playableTokens.get(chosenToken);
@@ -122,10 +129,6 @@ public abstract class Player {
 			if (t.getPosition().getType() != SquareType.Goal) {
 				hasWon = false;
 			}
-		}
-		
-		if (hasWon == true) {
-			System.out.println(Game.colorToString(this.color) + " player finished! Congratulations!");
 		}
 		
 		return hasWon;

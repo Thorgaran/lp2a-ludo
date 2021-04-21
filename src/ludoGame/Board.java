@@ -7,9 +7,10 @@ import java.awt.event.*;
 import java.io.*;
 
 public class Board extends JPanel {
+	public static int SQUARE_SIZE = 50;
+	
 	static boolean skipped;
 	private Image backgroundImage;
-	private int SQUARE_SIZE = 50;
 	
 	Board() {
 		Image toResize = null;

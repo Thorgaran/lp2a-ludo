@@ -72,6 +72,8 @@ public class Dice {
 		int savedRoll = this.number;
 		
 		if (showAnimation) {
+			Game.setInfoText(Game.colorToString(playerColor) + " is throwing the dice");
+			
 			double sleepDelta = 1.1;
 			do {
 				// Display temporary dice face

@@ -3,12 +3,16 @@ package ludoGame;
 import java.awt.Color;
 import java.util.*;
 
+import javax.swing.JLabel;
+
 public class Game {
 	// Define game colors only once here, from north west to north east
 	public static Color NW_COLOR = new Color(255, 245, 0);
 	public static Color SW_COLOR = Color.CYAN;
 	public static Color SE_COLOR = Color.GREEN;
 	public static Color NE_COLOR = Color.RED;
+	
+	private static JLabel infoText;
 	
 	LinkedHashMap<Color, Player> players = new LinkedHashMap<Color, Player>();
 	private Dice dice;
@@ -180,24 +184,37 @@ public class Game {
 		} while (diceResult == 6 && consecutiveTurns < 4);
 	}
 	
-	public void play() {
+	// Returns the list of player colors from winner to loser
+	public ArrayList<Color> play() {
 		List<Color> turnOrder = new ArrayList<Color>(Arrays.asList(
 			Game.NE_COLOR, Game.SE_COLOR, Game.SW_COLOR, Game.NW_COLOR
 		)); 
-		Color currentColor = this.startingPlayer(turnOrder); 
+		ArrayList<Color> winOrder = new ArrayList<Color>();
 		
+		Color currentColor = this.startingPlayer(turnOrder); 
 		while (turnOrder.size() > 1) {
 			this.playerTurn(this.players.get(currentColor));
 			
 			if (this.players.get(currentColor).hasWon()){
 				turnOrder.remove(currentColor);
+				winOrder.add(currentColor);
 				
 				dice.changeToMedal(currentColor, 4-turnOrder.size());
 			}
 			
 			currentColor = turnOrder.get((turnOrder.indexOf(currentColor) + 1) % turnOrder.size());
 		}
-		System.out.println("Game ended!");
+		
+		// Display the winner and wait for the user to see
+		Game.setInfoText(Game.colorToString(winOrder.get(0)) + " won, congrats! The game is over!");
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return winOrder;
 	}
 
 	public Color startingPlayer(List<Color> playerColors) {
@@ -207,6 +224,8 @@ public class Game {
 		for(Color color: playerColors) {
 			colorsWithThrow.put(color, null);
 		}
+		
+		Game.setInfoText("Selection of the first player...");
 		
 		while (colorsWithThrow.size() != 1) {
 			// Have the remaining players throw their dices
@@ -245,6 +264,10 @@ public class Game {
 		return colorsWithThrow.keySet().iterator().next();
 	}
 	
+	public static void setInfoText(String text) {
+		Game.infoText.setText(text);
+	}
+	
 	public static String colorToString(Color color) {
 		if (color == Game.NE_COLOR) {
 			return "Red";
@@ -264,6 +287,8 @@ public class Game {
 		Window window = new Window();
 		
 		Board board = window.setupBoard();
+		// We know the first component is a JLabel, thus we can do this
+		Game.infoText = (JLabel) window.getContentPane().getComponent(0);
 		
 		Game game = new Game(board);
 		window.rebuild();

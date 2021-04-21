@@ -15,6 +15,7 @@ public class Window extends JFrame {
 		super("lp2a-ludo");
 		
 		this.setSize(500, 500);
+		this.setResizable(false);
 	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    
 		JButton start = new JButton("Start game");
@@ -74,10 +75,10 @@ public class Window extends JFrame {
 		
 		this.setVisible(true);
 	    
-		//wait for the player to start the game or close the window
-		while (Window.started!=MenuState.game) {
+		// Wait for the player to start the game or close the window
+		while (Window.started != MenuState.game) {
 		    // Wait for the user to click "Start game" or "rules"
-		    while (Window.started==MenuState.selection) {
+		    while (Window.started == MenuState.selection) {
 		    	try {
 		    		Thread.sleep(100);
 		    	} catch (InterruptedException e ) {
@@ -85,8 +86,8 @@ public class Window extends JFrame {
 		    		System.exit(1);
 		    	}
 		    }
-		    //display rules if the player clicks the rules button
-		    if (Window.started==MenuState.rules) {
+		    // Display rules if the player clicks the rules button
+		    if (Window.started == MenuState.rules) {
 		    	exit.setVisible(false);
 		    	start.setVisible(false);
 		    	rules.setVisible(false);
@@ -103,16 +104,23 @@ public class Window extends JFrame {
 		    	this.repaint();
 		    }
 		}
-		//then the game board is initialized in the main method and the game starts
+		// Then the game board is initialized in the main method and the game starts
 	}
 
 	public Board setupBoard() {
 		this.getContentPane().removeAll();
 		
-		Board board = new Board();
+		this.getContentPane().setLayout(new BoxLayout(this.getContentPane(), BoxLayout.PAGE_AXIS));
 		
-		this.setContentPane(board);
-				
+		JLabel infoText = new JLabel(" ", SwingConstants.CENTER);
+		infoText.setAlignmentX(CENTER_ALIGNMENT);
+		infoText.setFont(infoText.getFont().deriveFont(16.0f));
+		this.getContentPane().add(infoText);
+		
+		Board board = new Board();
+		board.setMinimumSize(new Dimension(Board.SQUARE_SIZE*15, Board.SQUARE_SIZE*15));
+		this.getContentPane().add(board);
+		
 		return board;
 	}
 	
