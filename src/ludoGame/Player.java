@@ -12,8 +12,6 @@ public abstract class Player {
 	
 	private JButton button;
 	
-	protected static Scanner keyboard = new Scanner(System.in);
-	
 	Player(Color color, ArrayList<Square> homes) {
 		this.color = color;
 		this.homeSquares = homes;
