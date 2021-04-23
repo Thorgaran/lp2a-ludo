@@ -17,6 +17,22 @@ public class Dice {
 			new ImageIcon("dice_5.png"),
 			new ImageIcon("dice_6.png")
 	};
+	private int[] faked= {
+			3,5,2,6,
+			5,1,3,2,
+			6,3,4,1,2,
+			4,6,5,3,6,5,
+			1,5,6,3,5,
+			1,2,3,5,
+			6,1,4,5,5,
+			6,1,1,3,2,
+			4,1,2,6,6,3,
+			6,4,1,1,5,
+			4,2,1,6,6,5,
+			1,6,6,5,6,1,1,
+			1,6,6,5,6,1,1,
+			1,6,1,2,1,
+	};
 	private HashMap<Color, JLabel> dispDices = new HashMap<Color, JLabel>();
 	
 	Dice(Board board, Collection<Player> players) {
@@ -46,6 +62,18 @@ public class Dice {
 			
 	        board.add(dispDice, c);
 			this.dispDices.put(player.getColor(), dispDice);
+		}
+	}
+	
+	public int fakeRoll() {
+		if (Game.turn>=this.faked.length) {
+			this.number = ThreadLocalRandom.current().nextInt(1, 7);
+			
+			return this.number;
+		} else {
+			this.number = this.faked[Game.turn];
+			
+			return this.number;
 		}
 	}
 	

@@ -11,6 +11,7 @@ public class Game {
 	public static Color SW_COLOR = Color.CYAN;
 	public static Color SE_COLOR = Color.GREEN;
 	public static Color NE_COLOR = Color.RED;
+	public static int turn;
 	
 	private static JLabel infoText;
 	
@@ -172,7 +173,7 @@ public class Game {
 		int consecutiveTurns=1;
 		
 		do {
-			diceResult = this.dice.roll();
+			diceResult = this.dice.fakeRoll();
 			this.dice.hideDices();
 			this.dice.dispFace(p.getColor(), p instanceof HumanPlayer);
 			
@@ -181,11 +182,13 @@ public class Game {
 			p.turn(diceResult);
 						
 			consecutiveTurns++;
+			Game.turn++;
 		} while (diceResult == 6 && consecutiveTurns < 4);
 	}
 	
 	// Returns the list of player colors from winner to loser
 	public ArrayList<Color> play() {
+		Game.turn=0;
 		List<Color> turnOrder = new ArrayList<Color>(Arrays.asList(
 			Game.NE_COLOR, Game.SE_COLOR, Game.SW_COLOR, Game.NW_COLOR
 		)); 
@@ -203,6 +206,7 @@ public class Game {
 			}
 			
 			currentColor = turnOrder.get((turnOrder.indexOf(currentColor) + 1) % turnOrder.size());
+			
 		}
 		
 		// Display the winner and wait for the user to see
@@ -230,8 +234,9 @@ public class Game {
 		while (colorsWithThrow.size() != 1) {
 			// Have the remaining players throw their dices
 			for(Color color: colorsWithThrow.keySet()) {
-				colorsWithThrow.put(color, this.dice.roll());
+				colorsWithThrow.put(color, this.dice.fakeRoll());
 				this.dice.dispFace(color, true);
+				Game.turn++;
 			}
 			
 			// Get the biggest throw value
