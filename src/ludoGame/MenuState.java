@@ -1,7 +1,8 @@
 package ludoGame;
 
 public enum MenuState {
-	selection,
-	game,
-	rules
+	None,
+	Play,
+	Rules,
+	Exit
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.*;
 
+@SuppressWarnings("serial")
 public class Square extends JPanel {
 	private Square nextSquare;
 	private Color color; // This color represents the quadrant the square is in

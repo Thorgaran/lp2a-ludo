@@ -2,6 +2,7 @@ package ludoGame;
 
 import java.awt.Color;
 
+@SuppressWarnings("serial")
 public class ForkSquare extends Square {
 	private Square goalRowSquare;
 	private boolean goalRowLocked = true;
@@ -53,6 +54,10 @@ public class ForkSquare extends Square {
 	
 	public void unlockGoalRow() {
 		this.goalRowLocked = false;
+	}
+	
+	public void lockGoalRow() {
+		this.goalRowLocked = true;
 	}
 	
 	public boolean isGoalRowLocked() {

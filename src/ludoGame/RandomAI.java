@@ -21,7 +21,11 @@ public class RandomAI extends Player {
 			1,1,0,0,0,
 	};
 	RandomAI(Color color, ArrayList<Square> homes) {
-		super(color, homes);
+		super(color, homes, PlayerType.RandomAI);
+	}
+	
+	RandomAI(Player oldPlayer) {
+		super(oldPlayer, PlayerType.RandomAI);
 	}
 	
 	protected Token chooseToken(HashMap<Token, Square> playableTokens) {

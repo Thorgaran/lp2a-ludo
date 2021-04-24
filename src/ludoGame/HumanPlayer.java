@@ -7,7 +7,11 @@ public class HumanPlayer extends Player {
 	Token chosenToken;
 	
 	HumanPlayer(Color color, ArrayList<Square> homes) {
-		super(color, homes);
+		super(color, homes, PlayerType.HumanPlayer);
+	}
+	
+	HumanPlayer(Player oldPlayer) {
+		super(oldPlayer, PlayerType.HumanPlayer);
 	}
 	
 	public void setChosenToken(Token token) {

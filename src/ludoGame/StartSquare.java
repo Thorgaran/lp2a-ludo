@@ -2,6 +2,7 @@ package ludoGame;
 
 import java.awt.Color;
 
+@SuppressWarnings("serial")
 public class StartSquare extends Square {
 	private Direction arrowDir;
 	

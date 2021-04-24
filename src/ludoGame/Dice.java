@@ -17,6 +17,7 @@ public class Dice {
 			new ImageIcon("dice_5.png"),
 			new ImageIcon("dice_6.png")
 	};
+
 	private int[] faked= {
 			3,5,2,6,
 			5,1,3,2,
@@ -33,7 +34,13 @@ public class Dice {
 			1,6,6,5,6,1,1,
 			1,6,1,2,1,
 	};
+
+	
+	// This hashmap contains 4 JLabels used to display the dices at each player's homes
 	private HashMap<Color, JLabel> dispDices = new HashMap<Color, JLabel>();
+	
+	// This hashmap contains the JLabels once they display medals
+	private HashMap<Color, JLabel> dispMedals = new HashMap<Color, JLabel>();
 	
 	Dice(Board board, Collection<Player> players) {
 		this.number = this.roll();
@@ -93,14 +100,16 @@ public class Dice {
 		}
 	}
 	
-	public void dispFace(Color playerColor, boolean showAnimation) {
+	public void dispFace(Player player, boolean showAnimation) {
+		Color playerColor = player.getColor();
+		
 		JLabel dispDice = this.dispDices.get(playerColor);
 		dispDice.setVisible(true);
 		
 		int savedRoll = this.number;
 		
 		if (showAnimation) {
-			Game.setInfoText(Game.colorToString(playerColor) + " is throwing the dice");
+			Game.setInfoText(player.getColoredType() + " is throwing the dice");
 			
 			double sleepDelta = 1.1;
 			do {
@@ -128,6 +137,9 @@ public class Dice {
 	// Displayed medal depends on the ranking
 	public void changeToMedal(Color playerColor, int ranking) {
 		JLabel medal = this.dispDices.get(playerColor);
+		
+		// Remove the medal after storing it away
+		this.dispMedals.put(playerColor, this.dispDices.get(playerColor));
 		this.dispDices.remove(playerColor);
 		
 		switch (ranking) {
@@ -142,5 +154,17 @@ public class Dice {
 
 		medal.setVisible(true);
 		medal.repaint();
+	}
+	
+	public void reset() {
+		// Put the medals back in diceDisplay
+		this.dispDices.putAll(this.dispMedals);
+		this.dispMedals.clear();
+		
+		// Reset the dispDices to their original state without image
+		for(JLabel dispDice: this.dispDices.values()) {
+			dispDice.setIcon(null);
+			dispDice.setVisible(false);
+		}
 	}
 }
