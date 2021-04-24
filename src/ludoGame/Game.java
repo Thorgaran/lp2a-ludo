@@ -12,6 +12,15 @@ public class Game {
 	public static Color SE_COLOR = Color.GREEN;
 	public static Color NE_COLOR = Color.RED;
 	
+	// The player types represented as indexes (because they are coming straight from comboBoxes)
+	// Needs to be static because it's used directly by action listeners
+	private static PlayerType[] playerTypes = {
+		PlayerType.HumanPlayer,
+		PlayerType.HumanPlayer,
+		PlayerType.HumanPlayer,
+		PlayerType.HumanPlayer
+	};
+	
 	private static JLabel infoText;
 	
 	LinkedHashMap<Color, Player> players = new LinkedHashMap<Color, Player>();
@@ -22,7 +31,6 @@ public class Game {
 		Game.infoText = window.getInfoText();
 		
 		Color[] playerColors = {Game.NW_COLOR, Game.SW_COLOR, Game.SE_COLOR, Game.NE_COLOR};
-		HashMap<Color, Boolean> playerType = new HashMap<Color, Boolean>();
 		
 		// This class is basically a struct only used for the board creation
 		class SquareInitData {
@@ -164,7 +172,7 @@ public class Game {
 		do {
 			diceResult = this.dice.roll();
 			this.dice.hideDices();
-			this.dice.dispFace(p.getColor(), p instanceof HumanPlayer);
+			this.dice.dispFace(p, p instanceof HumanPlayer);
 			
 			if (diceResult == 6 && consecutiveTurns == 3) { break; }
 			
@@ -196,7 +204,7 @@ public class Game {
 		}
 		
 		// Display the winner and wait for the user to see
-		Game.setInfoText(Game.colorToString(winOrder.get(0)) + " won, congrats! The game is over!");
+		Game.setInfoText(this.players.get(winOrder.get(0)).getColoredType() + " won, congrats! The game is over!");
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
@@ -235,7 +243,7 @@ public class Game {
 			// Have the remaining players throw their dices
 			for(Color color: colorsWithThrow.keySet()) {
 				colorsWithThrow.put(color, this.dice.roll());
-				this.dice.dispFace(color, true);
+				this.dice.dispFace(this.players.get(color), true);
 			}
 			
 			// Get the biggest throw value
@@ -268,27 +276,12 @@ public class Game {
 		return colorsWithThrow.keySet().iterator().next();
 	}
 	
-	public static void setInfoText(String text) {
-		Game.infoText.setText("<html>" + text + "</html>");
+	public static void setPlayerTypeAt(int index, PlayerType type) {
+		Game.playerTypes[index] = type;
 	}
 	
-	public static String colorToString(Color color) {
-		String colorString = "";
-		
-		if (color == Game.NE_COLOR) {
-			colorString = "Red";
-		} else if (color == Game.SE_COLOR) {
-			colorString = "Green";
-		} else if (color == Game.SW_COLOR) {
-			colorString = "Blue";
-		} else if (color == Game.NW_COLOR) {
-			colorString = "Yellow";
-		} else {
-			System.out.println("Illegal player color!");
-			colorString = "?";
-		}
-		
-		return Game.dyeText(colorString, color.darker());
+	public static void setInfoText(String text) {
+		Game.infoText.setText("<html>" + text + "</html>");
 	}
 	
 	// Only works if the text is displayed in a container that supports HTML
@@ -311,8 +304,10 @@ public class Game {
 			window.menuLoop();
 			
 			// Update player types
+			int i = 0;
 			for(Player player: game.players.values()) {
-				game.players.put(player.getColor(), new RandomAI(player));
+				game.players.put(player.getColor(), Game.playerTypes[i].turnPlayerInto(player));
+				i++;
 			}
 			
 			game.play();

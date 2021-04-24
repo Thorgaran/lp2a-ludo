@@ -1,7 +1,6 @@
 package ludoGame;
 
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.*;
@@ -71,14 +70,16 @@ public class Dice {
 		}
 	}
 	
-	public void dispFace(Color playerColor, boolean showAnimation) {
+	public void dispFace(Player player, boolean showAnimation) {
+		Color playerColor = player.getColor();
+		
 		JLabel dispDice = this.dispDices.get(playerColor);
 		dispDice.setVisible(true);
 		
 		int savedRoll = this.number;
 		
 		if (showAnimation) {
-			Game.setInfoText(Game.colorToString(playerColor) + " is throwing the dice");
+			Game.setInfoText(player.getColoredType() + " is throwing the dice");
 			
 			double sleepDelta = 1.1;
 			do {

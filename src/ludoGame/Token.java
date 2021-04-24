@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+@SuppressWarnings("serial")
 public class Token extends JPanel implements MouseListener {
 	private Square position;
 	private Player player;

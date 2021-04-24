@@ -5,11 +5,11 @@ import java.util.*;
 
 public class RandomAI extends Player {
 	RandomAI(Color color, ArrayList<Square> homes) {
-		super(color, homes);
+		super(color, homes, PlayerType.RandomAI);
 	}
 	
 	RandomAI(Player oldPlayer) {
-		super(oldPlayer);
+		super(oldPlayer, PlayerType.RandomAI);
 	}
 	
 	protected Token chooseToken(HashMap<Token, Square> playableTokens) {
@@ -22,7 +22,7 @@ public class RandomAI extends Player {
 		}
 		
 		try {
-			Thread.sleep(10);
+			Thread.sleep(500);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			System.exit(1);

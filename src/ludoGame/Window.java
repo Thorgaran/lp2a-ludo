@@ -1,12 +1,11 @@
 package ludoGame;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import java.awt.*;
 import java.awt.event.*;
 
+@SuppressWarnings("serial")
 public class Window extends JFrame {
 	private static MenuState menuState = MenuState.None;
 	private Board board;
@@ -67,8 +66,14 @@ public class Window extends JFrame {
 		while (!startGame) {
 			switch (Window.menuState) {
 			case Play:
-				// JDialog playerTypeDialog = new JDialog(this, "Player selection", true);
-				startGame = true;
+				Color[] playerColors = {Game.NW_COLOR, Game.SW_COLOR, Game.SE_COLOR, Game.NE_COLOR};
+				PlayerTypeDialog playerTypeDialog = new PlayerTypeDialog(this, playerColors);
+				
+				startGame = playerTypeDialog.isGameStarting();
+				if (startGame) {
+					
+				}
+				
 				Window.menuState = MenuState.None;
 				break;
 			
@@ -165,6 +170,8 @@ public class Window extends JFrame {
 	
 	private void dispRules() {
 		JDialog rulesDialog = new JDialog(this, "Rules", true);
+		rulesDialog.setResizable(false);
+		rulesDialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		JLabel rulesText = new JLabel();
 		//we write the rules from the project pdf

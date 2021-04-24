@@ -7,6 +7,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.concurrent.ThreadLocalRandom;
 
+@SuppressWarnings("serial")
 public class Board extends JPanel {
 	public static int SQUARE_SIZE = 50;
 	
@@ -73,6 +74,6 @@ public class Board extends JPanel {
 		    super.paintComponent(g);
 		    Graphics2D g2d = (Graphics2D) g;
 		    
-		    g.drawImage(backgroundImage,0,0,this); 
+		    g2d.drawImage(backgroundImage,0,0,this); 
 		}
 }

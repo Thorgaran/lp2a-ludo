@@ -5,6 +5,8 @@ import java.util.*;
 import javax.swing.*;
 
 public abstract class Player {
+	private PlayerType type;
+	
 	private Color color;
 	private ArrayList<Square> homeSquares;
 	private Token[] tokens = new Token[4];
@@ -12,7 +14,9 @@ public abstract class Player {
 	
 	private JButton button;
 	
-	Player(Color color, ArrayList<Square> homes) {
+	Player(Color color, ArrayList<Square> homes, PlayerType type) {
+		this.type = type;
+		
 		this.color = color;
 		this.homeSquares = homes;
 		
@@ -21,8 +25,10 @@ public abstract class Player {
 		}
 	}
 	
-	Player(Player oldPlayer) {
+	Player(Player oldPlayer, PlayerType newType) {
 		// This constructor is used to change the type of a player between games
+		this.type = newType;
+		
 		this.color = oldPlayer.color;
 		this.homeSquares = oldPlayer.homeSquares;
 		this.tokens = oldPlayer.getTokens();
@@ -71,6 +77,10 @@ public abstract class Player {
 		return this.hasEaten;
 	}
 	
+	public String getColoredType() {
+		return Game.dyeText(this.type.toString(), this.color.darker());
+	}
+	
 	abstract protected Token chooseToken(HashMap<Token, Square> playableTokens);
 	
 	public void turn(int diceResult) {
@@ -85,10 +95,10 @@ public abstract class Player {
 		}
 		
 		if (playableTokens.isEmpty()) {
-			Game.setInfoText(Game.colorToString(this.color) + " cannot play and has to pass");
+			Game.setInfoText(this.getColoredType() + " cannot play and has to pass");
 		}
 		else {
-			Game.setInfoText(Game.colorToString(this.color) + " must select a token");
+			Game.setInfoText(this.getColoredType() + " must select a token");
 		}
 		Token chosenToken = this.chooseToken(playableTokens);
 		

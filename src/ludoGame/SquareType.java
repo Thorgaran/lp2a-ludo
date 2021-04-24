@@ -7,5 +7,5 @@ public enum SquareType {
 	Safe,
 	Fork,
 	GoalRow,
-	Goal;
+	Goal
 }
