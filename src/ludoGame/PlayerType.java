@@ -4,7 +4,10 @@ import java.util.ArrayList;
 
 public enum PlayerType {
 	HumanPlayer,
-	RandomAI;
+	RandomAI,
+	SpeedrunAI,
+	SlowAI,
+	SmartAI;
 	
 	public String toString() {
 		switch (this) {
@@ -12,6 +15,12 @@ public enum PlayerType {
 			return "Human Player";
 		case RandomAI:
 			return "Random AI";
+		case SpeedrunAI:
+			return "Speedrun AI";
+		case SlowAI:
+			return "Slow AI";
+		case SmartAI:
+			return "Smart AI";
 		default:
 			System.out.println("Invalid player type");
 			System.exit(1);
