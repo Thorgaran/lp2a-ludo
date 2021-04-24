@@ -10,6 +10,10 @@ public class HumanPlayer extends Player {
 		super(color, homes);
 	}
 	
+	HumanPlayer(Player oldPlayer) {
+		super(oldPlayer);
+	}
+	
 	public void setChosenToken(Token token) {
 		this.chosenToken = token;
 	}

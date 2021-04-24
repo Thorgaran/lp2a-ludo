@@ -17,18 +17,12 @@ public class Game {
 	LinkedHashMap<Color, Player> players = new LinkedHashMap<Color, Player>();
 	private Dice dice;
 	
-	Game(Board board) {
+	Game(Window window) {
+		Board board = window.getBoard();
+		Game.infoText = window.getInfoText();
+		
 		Color[] playerColors = {Game.NW_COLOR, Game.SW_COLOR, Game.SE_COLOR, Game.NE_COLOR};
 		HashMap<Color, Boolean> playerType = new HashMap<Color, Boolean>();
-		//initializing the proper number of players and AIs
-		for (int i=0;i<Window.playerCount;i++) {
-			//human players
-			playerType.put(playerColors[i], true);
-		}
-		for (int i=Window.playerCount;i<4;i++) {
-			//AIs
-			playerType.put(playerColors[i], false);
-		}
 		
 		// This class is basically a struct only used for the board creation
 		class SquareInitData {
@@ -114,9 +108,7 @@ public class Game {
 						board.addSquare(homeSquare);
 					}
 					
-					Player player = (playerType.get(color)) 
-						? new HumanPlayer(color, homes) 
-						: new RandomAI(color, homes);
+					Player player = new HumanPlayer(color, homes);
 					players.put(color, player);
 				}
 				
@@ -153,8 +145,6 @@ public class Game {
 		
 		// Create the dice and its displays
 		this.dice = new Dice(board, this.players.values());
-
-		//board.repaint();
 	}
 	
 	// Transforms a row and a column to the same position in the next quadrant
@@ -214,6 +204,14 @@ public class Game {
 			System.exit(1);
 		}
 		
+		// Reset the game to its initial state
+		
+		this.dice.reset();
+		
+		for(Player player: this.players.values()) {
+			player.reset();
+		}
+		
 		return winOrder;
 	}
 
@@ -226,6 +224,12 @@ public class Game {
 		}
 		
 		Game.setInfoText("Selection of the first player...");
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 		
 		while (colorsWithThrow.size() != 1) {
 			// Have the remaining players throw their dices
@@ -265,35 +269,54 @@ public class Game {
 	}
 	
 	public static void setInfoText(String text) {
-		Game.infoText.setText(text);
+		Game.infoText.setText("<html>" + text + "</html>");
 	}
 	
 	public static String colorToString(Color color) {
+		String colorString = "";
+		
 		if (color == Game.NE_COLOR) {
-			return "Red";
+			colorString = "Red";
 		} else if (color == Game.SE_COLOR) {
-			return "Green";
+			colorString = "Green";
 		} else if (color == Game.SW_COLOR) {
-			return "Blue";
-		} else  if (color == Game.NW_COLOR) {
-			return "Yellow";
+			colorString = "Blue";
+		} else if (color == Game.NW_COLOR) {
+			colorString = "Yellow";
 		} else {
 			System.out.println("Illegal player color!");
-			return "?";
+			colorString = "?";
 		}
+		
+		return Game.dyeText(colorString, color.darker());
+	}
+	
+	// Only works if the text is displayed in a container that supports HTML
+	public static String dyeText(String text, Color color) {
+		float[] colorComp = color.getRGBColorComponents(null);
+		String rgbString = "rgb(" + (int) (colorComp[0]*255) + "," 
+								  + (int) (colorComp[1]*255) + "," 
+								  + (int) (colorComp[2]*255) + ")";
+		
+		return "<span style=\"color:" + rgbString + ";\">" + text + "</span>";
 	}
 
 	public static void main(String[] args) {
 		Window window = new Window();
+		Game game = new Game(window);
 		
-		Board board = window.setupBoard();
-		// We know the first component is a JLabel, thus we can do this
-		Game.infoText = (JLabel) window.getContentPane().getComponent(0);
-		
-		Game game = new Game(board);
-		window.rebuild();
-		
-		game.play();
+		// Enter the menu and play games until the user decides to quit
+		while (true) {
+			// Go into menu loop until a game starts
+			window.menuLoop();
+			
+			// Update player types
+			for(Player player: game.players.values()) {
+				game.players.put(player.getColor(), new RandomAI(player));
+			}
+			
+			game.play();
+		}
 	}
 
 }

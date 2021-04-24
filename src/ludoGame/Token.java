@@ -34,6 +34,10 @@ public class Token extends JPanel implements MouseListener {
 		return this.player;
 	}
 	
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
+	
 	public Color getColor() {
 		return this.player.getColor();
 	}

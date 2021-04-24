@@ -21,6 +21,20 @@ public abstract class Player {
 		}
 	}
 	
+	Player(Player oldPlayer) {
+		// This constructor is used to change the type of a player between games
+		this.color = oldPlayer.color;
+		this.homeSquares = oldPlayer.homeSquares;
+		this.tokens = oldPlayer.getTokens();
+		
+		this.button = oldPlayer.button;
+		
+		// Change token ownership
+		for(Token token: this.tokens) {
+			token.setPlayer(this);
+		}
+	}
+	
 	public JButton getButton() {
 		return this.button;
 	}
@@ -130,5 +144,22 @@ public abstract class Player {
 		}
 		
 		return hasWon;
+	}
+	
+	public void reset() {
+		// Move tokens back to their homes
+		for(Token token: this.getTokens()) {
+			token.move(this.getEmptyHomeSquare());
+		}
+		
+		// Relock the goal row
+		this.hasEaten = false;
+		
+		Square forkSquare = this.homeSquares.get(0);
+		for(int i=0; i<51; i++) {
+			forkSquare = forkSquare.getNextSquare();
+		}
+		
+		((ForkSquare) forkSquare).lockGoalRow();
 	}
 }

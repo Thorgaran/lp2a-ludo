@@ -8,6 +8,10 @@ public class RandomAI extends Player {
 		super(color, homes);
 	}
 	
+	RandomAI(Player oldPlayer) {
+		super(oldPlayer);
+	}
+	
 	protected Token chooseToken(HashMap<Token, Square> playableTokens) {
 		Token chosenToken = null;
 		if (!playableTokens.isEmpty()) {
@@ -18,7 +22,7 @@ public class RandomAI extends Player {
 		}
 		
 		try {
-			Thread.sleep(500);
+			Thread.sleep(10);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			System.exit(1);

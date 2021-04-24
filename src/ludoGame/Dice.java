@@ -1,6 +1,7 @@
 package ludoGame;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.*;
@@ -17,7 +18,12 @@ public class Dice {
 			new ImageIcon("dice_5.png"),
 			new ImageIcon("dice_6.png")
 	};
+	
+	// This hashmap contains 4 JLabels used to display the dices at each player's homes
 	private HashMap<Color, JLabel> dispDices = new HashMap<Color, JLabel>();
+	
+	// This hashmap contains the JLabels once they display medals
+	private HashMap<Color, JLabel> dispMedals = new HashMap<Color, JLabel>();
 	
 	Dice(Board board, Collection<Player> players) {
 		this.number = this.roll();
@@ -100,6 +106,9 @@ public class Dice {
 	// Displayed medal depends on the ranking
 	public void changeToMedal(Color playerColor, int ranking) {
 		JLabel medal = this.dispDices.get(playerColor);
+		
+		// Remove the medal after storing it away
+		this.dispMedals.put(playerColor, this.dispDices.get(playerColor));
 		this.dispDices.remove(playerColor);
 		
 		switch (ranking) {
@@ -114,5 +123,17 @@ public class Dice {
 
 		medal.setVisible(true);
 		medal.repaint();
+	}
+	
+	public void reset() {
+		// Put the medals back in diceDisplay
+		this.dispDices.putAll(this.dispMedals);
+		this.dispMedals.clear();
+		
+		// Reset the dispDices to their original state without image
+		for(JLabel dispDice: this.dispDices.values()) {
+			dispDice.setIcon(null);
+			dispDice.setVisible(false);
+		}
 	}
 }

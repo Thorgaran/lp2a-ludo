@@ -55,6 +55,10 @@ public class ForkSquare extends Square {
 		this.goalRowLocked = false;
 	}
 	
+	public void lockGoalRow() {
+		this.goalRowLocked = true;
+	}
+	
 	public boolean isGoalRowLocked() {
 		return this.goalRowLocked;
 	}
