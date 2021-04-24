@@ -159,8 +159,10 @@ public abstract class Player {
 	public void reset() {
 		// Move tokens back to their homes
 		for(Token token: this.getTokens()) {
-			token.move(this.getEmptyHomeSquare());
-		}
+            if (token.getPosition().getType() != SquareType.Home) {
+                token.move(this.getEmptyHomeSquare());
+            }
+        }
 		
 		// Relock the goal row
 		this.hasEaten = false;
