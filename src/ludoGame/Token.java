@@ -14,6 +14,10 @@ public class Token extends JPanel implements MouseListener {
 	// Only used for human player tokens
 	private boolean isActive = false;
 	
+	// These attributes are only used by AIs to make decisions, meaning they aren't used by the game engine
+	private int distance = 0; // Total distance traveled by the token. Is reset when the token returns to base
+	private int maybeDistance = 0; // This value is used to temporarily increase the distance. Ignored if the token doesn't move
+	
 	Token() {
 		System.out.println("Incorrect token initialization!");
 	}
@@ -54,8 +58,21 @@ public class Token extends JPanel implements MouseListener {
 	public void setTokHeight(int h) {
 		this.height=h;
 	}
+	
 	public int getTokHeight() {
 		return this.height;
+	}
+	
+	public int getDistance() {
+		return this.distance;
+	}
+	
+	public void setDistance(int distance) {
+		this.distance = distance;
+	}
+	
+	public void commitDistance() {
+		this.distance = this.maybeDistance;
 	}
 	
 	public void setIsActive(boolean isActive) {
@@ -94,6 +111,8 @@ public class Token extends JPanel implements MouseListener {
 			
 			if (movNb == 6) {
 				toReturn = toReturn.getNextSquare();
+				
+				this.maybeDistance = 1;
 			} else {
 				return null;
 			}
@@ -112,24 +131,31 @@ public class Token extends JPanel implements MouseListener {
 				}
 			}
 			
+			boolean additionalLap = false;
+			
 			// The token is already in play and not blocked, thus it can try leaving its square
 			for(int i=0; i < movNb; i++) {
 				// Test if the token fulfills all conditions to enter the goal row
-				if (toReturn.getType() == SquareType.Fork && 
-					toReturn.getColor() == this.getColor() &&
-					this.getPlayer().hasEaten())
-				{
-					if (this.isBlockBase()) {
-						return null;
+				if (toReturn.getType() == SquareType.Fork && toReturn.getColor() == this.getColor()) {
+					if (this.getPlayer().hasEaten()) {
+						if (this.isBlockBase()) {
+							return null;
+						}
+						else {
+							toReturn = ((ForkSquare) toReturn).getGoalRowSquare();
+						}
 					}
 					else {
-						toReturn = ((ForkSquare) toReturn).getGoalRowSquare();
+						additionalLap = true;
+						toReturn = toReturn.getNextSquare();
 					}
 				} else {
+					// Nothing special is happening, the token can move forward one more square
 					toReturn = toReturn.getNextSquare();
 				}
 				
 				if (toReturn.isBlocking() == true && i != movNb - 1) {
+					// The token reaches a blocking square while still having movement points
 				  	return null;
 				}
 			}
@@ -138,7 +164,12 @@ public class Token extends JPanel implements MouseListener {
 			if (toReturn.getType() == SquareType.GoalRow && toReturn.nbTokens() != 0) {
 				return null;
 			}
-		
+			
+			this.maybeDistance = this.distance + movNb;
+			if (additionalLap) {
+				// If the token does an additional lap, reduce its distance
+				this.maybeDistance -= 52;
+			}
 		}
 		
 		return toReturn;

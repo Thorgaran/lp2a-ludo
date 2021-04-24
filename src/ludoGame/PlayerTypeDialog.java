@@ -69,7 +69,7 @@ public class PlayerTypeDialog extends JDialog {
 		
 		// Add drop-down list
 		JComboBox<String> typeList = new JComboBox<String>(PlayerType.getTypeList());
-		typeList.setSelectedIndex(0);
+		typeList.setSelectedIndex(Game.getPlayerTypeAt(this.nbLines).toIndex());
 		typeList.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		// We know this event can only be called by a comboBox so this cast is safe, thus we can suppress the warning

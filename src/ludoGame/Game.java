@@ -280,6 +280,10 @@ public class Game {
 		Game.playerTypes[index] = type;
 	}
 	
+	public static PlayerType getPlayerTypeAt(int index) {
+		return Game.playerTypes[index];
+	}
+	
 	public static void setInfoText(String text) {
 		Game.infoText.setText("<html>" + text + "</html>");
 	}

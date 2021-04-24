@@ -51,6 +51,7 @@ public abstract class Player {
 	public ArrayList<Square> getHomeSquares() {
 		return this.homeSquares;
 	}
+	
 	public Square getEmptyHomeSquare() {
 		for (Square square : this.homeSquares) {
 			if (square.getTokens().size() == 0) {
@@ -113,6 +114,8 @@ public abstract class Player {
 					
 					eatenToken.move(homeSquare);
 					homeSquare.repaint();
+					
+					eatenToken.setDistance(0);
 				}
 				
 				// If the player is eating for the first time, remove the fork barrier
@@ -133,10 +136,13 @@ public abstract class Player {
 			boolean movingBlock = chosenToken.isBlockBase();
 			
 			chosenToken.move(destSquare);
+			chosenToken.commitDistance();
 			
 			// If the token is a block base, move the token above it too
 			if (movingBlock) {
-				startSquare.getTokens().get(startSquare.nbTokens() - 1).move(destSquare);
+				Token topToken = startSquare.getTokens().get(startSquare.nbTokens() - 1);
+				topToken.move(destSquare);
+				topToken.setDistance(chosenToken.getDistance());
 			}
 			
 			// Repaint start and destination squares
@@ -159,7 +165,10 @@ public abstract class Player {
 	public void reset() {
 		// Move tokens back to their homes
 		for(Token token: this.getTokens()) {
-			token.move(this.getEmptyHomeSquare());
+			if (token.getPosition().getType() != SquareType.Home) {
+				token.move(this.getEmptyHomeSquare());
+				token.setDistance(0);
+			}
 		}
 		
 		// Relock the goal row
