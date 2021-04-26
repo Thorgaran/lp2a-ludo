@@ -44,7 +44,7 @@ public class ResultDialog extends JDialog {
 		c.gridwidth = 1;
 		this.getContentPane().add(continueButton, c);
 		
-		this.setSize(new Dimension(600, 230));
+		this.setSize(new Dimension(400, 200));
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation(dim.width/2 - this.getWidth()/2, dim.height/2 - this.getHeight()/2);
 		
@@ -108,5 +108,9 @@ public class ResultDialog extends JDialog {
 		
 		this.resultLabels.get(4).setText("Outcome of " + nbOfGames + " games:");
 		this.resultLabels.get(5).setText("----------");
+		
+		this.pack();
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation(dim.width/2 - this.getWidth()/2, dim.height/2 - this.getHeight()/2);
 	}
 }
