@@ -95,7 +95,8 @@ public class Square extends JPanel {
 		}
 	}
 
-	// After calling this function, we know that if the return value is true, there is only one eatable token in the square
+	// After calling this function, we know that if the return value is true, 
+	// there is only one eatable token in the square (or a block)
 	public boolean isEatable(Token activeToken) {
 		if (this.getType() == SquareType.Safe || this.getType() == SquareType.Start) {
 			return false;

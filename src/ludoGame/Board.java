@@ -19,9 +19,9 @@ public class Board extends JPanel {
 		int background = ThreadLocalRandom.current().nextInt(1, 3);
 		String chosenBG;
 		switch (background) {
-			case 1: chosenBG = "background.png";
+			case 1: chosenBG = "img/background.png";
 			break;
-			default: chosenBG = "background2.png";
+			default: chosenBG = "img/background2.png";
 		}
 		try {
 			toResize = ImageIO.read(new File(chosenBG));
@@ -50,7 +50,7 @@ public class Board extends JPanel {
 	public JButton addSkip(int x, int y) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
-		JButton skip = new JButton(new ImageIcon("skip.png"));
+		JButton skip = new JButton(new ImageIcon("img/skip.png"));
 		skip.setPreferredSize(new Dimension(SQUARE_SIZE, SQUARE_SIZE));
 		skip.setBorder(BorderFactory.createLineBorder(Color.black));
 		c.gridx = x;

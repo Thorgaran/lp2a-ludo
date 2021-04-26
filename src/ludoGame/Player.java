@@ -82,9 +82,9 @@ public abstract class Player {
 		return Game.dyeText(this.type.toString(), this.color.darker());
 	}
 	
-	abstract protected Token chooseToken(HashMap<Token, Square> playableTokens);
+	abstract protected Token chooseToken(boolean showBoard, HashMap<Token, Square> playableTokens);
 	
-	public void turn(int diceResult) {
+	public void turn(boolean showBoard, int diceResult) {
 		HashMap<Token, Square> playableTokens = new HashMap<Token, Square>();
 		
 		for (Token t: this.getTokens()) { // Check your valid moves
@@ -96,12 +96,12 @@ public abstract class Player {
 		}
 		
 		if (playableTokens.isEmpty()) {
-			Game.setInfoText(this.getColoredType() + " cannot play and has to pass");
+			Game.setInfoText(showBoard, this.getColoredType() + " cannot play and has to pass");
 		}
 		else {
-			Game.setInfoText(this.getColoredType() + " must select a token");
+			Game.setInfoText(showBoard, this.getColoredType() + " must select a token");
 		}
-		Token chosenToken = this.chooseToken(playableTokens);
+		Token chosenToken = this.chooseToken(showBoard, playableTokens);
 		
 		if (chosenToken != null) {
 			Square startSquare = chosenToken.getPosition();
@@ -113,8 +113,10 @@ public abstract class Player {
 					Square homeSquare = eatenToken.getPlayer().getEmptyHomeSquare();
 					
 					eatenToken.move(homeSquare);
-					homeSquare.repaint();
-					
+					if (showBoard) {
+						homeSquare.repaint();	
+					}
+
 					eatenToken.setDistance(0);
 				}
 				
@@ -122,13 +124,15 @@ public abstract class Player {
 				if (!this.hasEaten) {
 					this.hasEaten = true;
 					
-					Square forkSquare = this.homeSquares.get(0);
-					for(int i=0; i<51; i++) {
-						forkSquare = forkSquare.getNextSquare();
+					if (showBoard) {
+						Square forkSquare = this.homeSquares.get(0);
+						for(int i=0; i<51; i++) {
+							forkSquare = forkSquare.getNextSquare();
+						}
+						
+						((ForkSquare) forkSquare).unlockGoalRow();
+						forkSquare.repaint();
 					}
-					
-					((ForkSquare) forkSquare).unlockGoalRow();
-					forkSquare.repaint();
 				}
 			}
 			
@@ -145,9 +149,11 @@ public abstract class Player {
 				topToken.setDistance(chosenToken.getDistance());
 			}
 			
-			// Repaint start and destination squares
-			startSquare.repaint();
-			destSquare.repaint();
+			if (showBoard) {
+				// Repaint start and destination squares
+				startSquare.repaint();
+				destSquare.repaint();
+			}
 		}
 	}
 	
@@ -162,7 +168,7 @@ public abstract class Player {
 		return hasWon;
 	}
 	
-	public void reset() {
+	public void reset(boolean showBoard) {
 		// Move tokens back to their homes
 		for(Token token: this.getTokens()) {
 			if (token.getPosition().getType() != SquareType.Home) {
@@ -174,11 +180,13 @@ public abstract class Player {
 		// Relock the goal row
 		this.hasEaten = false;
 		
-		Square forkSquare = this.homeSquares.get(0);
-		for(int i=0; i<51; i++) {
-			forkSquare = forkSquare.getNextSquare();
+		if (showBoard) {
+			Square forkSquare = this.homeSquares.get(0);
+			for(int i=0; i<51; i++) {
+				forkSquare = forkSquare.getNextSquare();
+			}
+			
+			((ForkSquare) forkSquare).lockGoalRow();
 		}
-		
-		((ForkSquare) forkSquare).lockGoalRow();
 	}
 }

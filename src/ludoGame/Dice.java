@@ -10,12 +10,12 @@ public class Dice {
 	private int number;
 	
 	private Icon[] diceFacesImg = {
-			new ImageIcon("dice_1.png"),
-			new ImageIcon("dice_2.png"),
-			new ImageIcon("dice_3.png"),
-			new ImageIcon("dice_4.png"),
-			new ImageIcon("dice_5.png"),
-			new ImageIcon("dice_6.png")
+			new ImageIcon("img/dice_1.png"),
+			new ImageIcon("img/dice_2.png"),
+			new ImageIcon("img/dice_3.png"),
+			new ImageIcon("img/dice_4.png"),
+			new ImageIcon("img/dice_5.png"),
+			new ImageIcon("img/dice_6.png")
 	};
 	
 	// This hashmap contains 4 JLabels used to display the dices at each player's homes
@@ -61,46 +61,45 @@ public class Dice {
 		return this.number;
 	}
 	
-	public void hideDices() {
-		// Hide the currently visible dices
-		for(JLabel dispDice: this.dispDices.values()) {
-			if (dispDice.isVisible()) {
-				dispDice.setVisible(false);
+	public void hideDices(boolean showBoard) {
+		if (showBoard) {			
+			// Hide the currently visible dices
+			for(JLabel dispDice: this.dispDices.values()) {
+				if (dispDice.isVisible()) {
+					dispDice.setVisible(false);
+				}
 			}
 		}
 	}
 	
-	public void dispFace(Player player, boolean showAnimation) {
-		Color playerColor = player.getColor();
-		
-		JLabel dispDice = this.dispDices.get(playerColor);
-		dispDice.setVisible(true);
-		
-		int savedRoll = this.number;
-		
-		if (showAnimation) {
-			Game.setInfoText(player.getColoredType() + " is throwing the dice");
+	public void dispFace(boolean showBoard, Player player, boolean showAnimation) {
+		if (showBoard) {
+			Color playerColor = player.getColor();
 			
-			double sleepDelta = 1.1;
-			do {
-				// Display temporary dice face
-				this.roll();
-				dispDice.setIcon(diceFacesImg[this.number-1]);
+			JLabel dispDice = this.dispDices.get(playerColor);
+			dispDice.setVisible(true);
+			
+			int savedRoll = this.number;
+			
+			if (showAnimation) {
+				Game.setInfoText(showBoard, player.getColoredType() + " is throwing the dice");
 				
-				try {
-					Thread.sleep(75 + (int) sleepDelta);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					System.exit(1);
-				}
-				
-				// Increase the waiting time slowly at first, then faster and faster
-				sleepDelta = Math.pow(sleepDelta, 1.4);
-			} while (sleepDelta < 1000);
+				double sleepDelta = 1.1;
+				do {
+					// Display temporary dice face
+					this.roll();
+					dispDice.setIcon(diceFacesImg[this.number-1]);
+					
+					Game.sleep(showBoard, 75 + (int) sleepDelta);
+					
+					// Increase the waiting time slowly at first, then faster and faster
+					sleepDelta = Math.pow(sleepDelta, 1.4);
+				} while (sleepDelta < 1000);
+			}
+			
+			// Show new dice actual value
+			dispDice.setIcon(diceFacesImg[savedRoll-1]);
 		}
-		
-		// Show new dice actual value
-		dispDice.setIcon(diceFacesImg[savedRoll-1]);
 	}
 	
 	// To optimize the medal display, we use the dice JLabel that won't be used anymore to display the medal
@@ -113,11 +112,11 @@ public class Dice {
 		this.dispDices.remove(playerColor);
 		
 		switch (ranking) {
-			case 1: medal.setIcon(new ImageIcon("gold_medal.png"));
+			case 1: medal.setIcon(new ImageIcon("img/gold_medal.png"));
 				break;
-			case 2: medal.setIcon(new ImageIcon("silver_medal.png"));
+			case 2: medal.setIcon(new ImageIcon("img/silver_medal.png"));
 				break;
-			case 3: medal.setIcon(new ImageIcon("bronze_medal.png"));
+			case 3: medal.setIcon(new ImageIcon("img/bronze_medal.png"));
 				break;
 			default: System.out.println("Unavailable ranking");
 		}

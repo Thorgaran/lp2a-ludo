@@ -13,20 +13,19 @@ public class RandomAI extends Player {
 		super(oldPlayer, PlayerType.RandomAI);
 	}
 	
-	protected Token chooseToken(HashMap<Token, Square> playableTokens) {
+	protected Token chooseToken(boolean showBoard, HashMap<Token, Square> playableTokens) {
 		Token chosenToken = null;
-		if (!playableTokens.isEmpty()) {
+		if (playableTokens.size() == 1) {
+			// If there is a single token, play it (this avoids some useless computations)
+			chosenToken = (Token) playableTokens.keySet().toArray()[0];
+		}
+		else if (!playableTokens.isEmpty()) {
 			Random generator = new Random();
 			Object[] keys = playableTokens.keySet().toArray();
 			chosenToken = (Token) keys[generator.nextInt(keys.length)];
 		}
 		
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		Game.sleep(showBoard, 500);
 		
 		return chosenToken;
 	}

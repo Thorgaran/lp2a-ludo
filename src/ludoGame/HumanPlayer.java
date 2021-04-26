@@ -18,7 +18,12 @@ public class HumanPlayer extends Player {
 		this.chosenToken = token;
 	}
 	
-	protected Token chooseToken(HashMap<Token, Square> playableTokens) {
+	protected Token chooseToken(boolean showBoard, HashMap<Token, Square> playableTokens) {
+		if (!showBoard) {
+			System.out.println("Error! Human player cannot be called with showBoard=false!");
+			System.exit(1);
+		}
+		
 		this.chosenToken = null;
 		List<Token> tokenList = new ArrayList<>(playableTokens.keySet());
 		
@@ -29,12 +34,7 @@ public class HumanPlayer extends Player {
 			this.getButton().repaint();
 			
 			while (!Board.skipped) {
-		    	try {
-		    		Thread.sleep(100);
-		    	} catch (InterruptedException e ) {
-		    		e.printStackTrace();
-		    		System.exit(1);
-		    	}
+		    	Game.sleep(showBoard, 100);
 		    }
 			
 			this.getButton().setVisible(false);
@@ -47,12 +47,7 @@ public class HumanPlayer extends Player {
 			}
 		
 			while (this.chosenToken == null) {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					System.exit(1);
-				}
+				Game.sleep(showBoard, 100);
 			}
 			
 			for(Token token: tokenList) {

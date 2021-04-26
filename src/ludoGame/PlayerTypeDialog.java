@@ -2,6 +2,7 @@ package ludoGame;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 
 import javax.swing.*;
 
@@ -11,7 +12,7 @@ public class PlayerTypeDialog extends JDialog {
 	
 	private boolean startGame = false;
 	
-	PlayerTypeDialog(JFrame window, Color[] playerColors) {
+	PlayerTypeDialog(JFrame window, Color[] playerColors, boolean removeHumans) {
 		super(window, "Player selection", true);
 		
 		this.setResizable(false);
@@ -19,7 +20,7 @@ public class PlayerTypeDialog extends JDialog {
 		this.getContentPane().setLayout(new GridBagLayout());
 		
 		for(Color color: playerColors) {
-			this.addPlayerLine(color);
+			this.addPlayerLine(color, removeHumans);
 		}
 		
 		// Add start button
@@ -43,7 +44,6 @@ public class PlayerTypeDialog extends JDialog {
 		c.gridwidth = 2;
 		this.getContentPane().add(startButton, c);
 		
-		//this.pack();
 		this.setSize(new Dimension(180, 180));
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation(dim.width/2 - this.getWidth()/2, dim.height/2 - this.getHeight()/2);
@@ -51,7 +51,7 @@ public class PlayerTypeDialog extends JDialog {
 		this.setVisible(true);
 	}
 	
-	private void addPlayerLine(Color color) {
+	private void addPlayerLine(Color color, boolean removeHumans) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
 		
@@ -68,17 +68,21 @@ public class PlayerTypeDialog extends JDialog {
 		this.getContentPane().add(colorSquare, c);
 		
 		// Add drop-down list
-		JComboBox<String> typeList = new JComboBox<String>(PlayerType.getTypeList());
-		typeList.setSelectedIndex(Game.getPlayerTypeAt(this.nbLines).toIndex());
-		typeList.addActionListener(new ActionListener() {
+		ArrayList<String> typeList = new ArrayList<String>(Arrays.asList(PlayerType.getTypeList()));
+		if (removeHumans) {
+			typeList.remove(typeList.size() - 1);
+		}
+		
+		JComboBox<String> typeListCB = new JComboBox<String>(typeList.toArray(new String[0]));
+		typeListCB.setSelectedIndex(Game.getPlayerType(color).toIndex());
+		typeListCB.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		// We know this event can only be called by a comboBox so this cast is safe, thus we can suppress the warning
 	    		@SuppressWarnings("unchecked")
-				JComboBox<String> typeList = (JComboBox<String>)e.getSource();
-	    		
-	    		// Dirty way to get the type list grid row
-	    		int typeListRow = typeList.getLocation().y / typeList.getHeight();
-	    		Game.setPlayerTypeAt(typeListRow, PlayerType.indexToType(typeList.getSelectedIndex()));
+				JComboBox<String> typeListCB = (JComboBox<String>)e.getSource();
+
+	    		// Why can we use color here? I don't think Java supports closures...
+	    		Game.setPlayerType(color, PlayerType.indexToType(typeListCB.getSelectedIndex()));
 	    	}
 	    });
 		
@@ -86,7 +90,7 @@ public class PlayerTypeDialog extends JDialog {
 		c.gridy = this.nbLines;
 		c.gridheight = 1;
 		c.gridwidth = 1;
-		this.getContentPane().add(typeList, c);
+		this.getContentPane().add(typeListCB, c);
 		
 		this.nbLines++;
 	}

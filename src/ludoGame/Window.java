@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.HashMap;
 
 @SuppressWarnings("serial")
 public class Window extends JFrame {
@@ -20,23 +21,6 @@ public class Window extends JFrame {
 	    
 	    this.createMenu();
 	    this.createBoard();
-	    
-	    /*//create, configure and add a slider and its label to choose the number of players
-	    JSlider count = new JSlider(0,4,0);
-	    count.setBounds(this.getWidth()/2 - 75, this.getHeight()/3 - 80, 150, 50);
-	    count.setMajorTickSpacing(1);
-	    count.setPaintTicks(true);
-	    count.setPaintLabels(true);
-	    count.setPaintTrack(true);
-	    
-	    Window.playerCount=count.getValue();
-	    count.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				Window.playerCount=count.getValue();
-			}
-	    });
-	    
-	    this.getContentPane().add(count);*/
 	}
 	
 	public Board getBoard() {
@@ -48,30 +32,61 @@ public class Window extends JFrame {
 		return (JLabel) this.playPanel.getComponent(0);
 	}
 	
-	public void menuLoop() {
+	public void menuLoop(Game game) {
 		// Display menu
-		
-		this.setVisible(false);
-		
-		this.setContentPane(this.menuPanel);
-		this.setSize(300, 400);
-		
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-	    this.setLocation(dim.width/2 - this.getWidth()/2, dim.height/2 - this.getHeight()/2);
-		
-		this.setVisible(true);
+		this.dispMenu();
 		
 		// Start menu loop
-		boolean startGame = false;
-		while (!startGame) {
+		while (true) {
 			switch (Window.menuState) {
 			case Play:
-				Color[] playerColors = {Game.NW_COLOR, Game.SW_COLOR, Game.SE_COLOR, Game.NE_COLOR};
-				PlayerTypeDialog playerTypeDialog = new PlayerTypeDialog(this, playerColors);
+				PlayerTypeDialog playerTypeDialog = new PlayerTypeDialog(this, Game.PLAYER_COLORS, false);
 				
-				startGame = playerTypeDialog.isGameStarting();
-				if (startGame) {
+				if (playerTypeDialog.isGameStarting()) {
+					this.dispBoard();
 					
+					game.updatePlayerTypes();
+					
+					game.play(true);
+					
+					this.dispMenu();
+				}
+				
+				Window.menuState = MenuState.None;
+				break;
+			
+			case PlayAI:
+				// Set all player types to Random AI to prevent the user from selecting human players
+				for(Color color: Game.PLAYER_COLORS) {
+					Game.setPlayerType(color, PlayerType.RandomAI);
+				}
+				
+				Color[] aiColors = {Game.SW_COLOR, Game.NE_COLOR};
+				PlayerTypeDialog playerTypeDialogAIonly = new PlayerTypeDialog(this, aiColors, true);
+				
+				if (playerTypeDialogAIonly.isGameStarting()) {
+					game.updatePlayerTypes();
+					
+					ResultDialog resultDialog = new ResultDialog(this);
+					
+					// Create a hashmap to count player wins
+					HashMap<Color, Integer> playerWins = new HashMap<Color, Integer>();
+					for(Color color: Game.PLAYER_COLORS) {
+						playerWins.put(color, 0);
+					}
+					
+					for(int i=0; i < Game.NB_AI_GAMES; i++) {
+						Color winner = game.play(false).get(0);
+
+						playerWins.put(winner, playerWins.get(winner) + 1);
+						
+						// Show the number of games done to the user
+						if ((i + 1) % 500 == 0) {
+							resultDialog.setGamesDone(i+1);
+						}
+					}
+					
+					resultDialog.showResults(game, playerWins, Game.NB_AI_GAMES);
 				}
 				
 				Window.menuState = MenuState.None;
@@ -88,23 +103,9 @@ public class Window extends JFrame {
 			case None:
 			default:
 				// Read user input every 100ms
-				try {
-		    		Thread.sleep(100);
-		    	} catch (InterruptedException e) {
-		    		e.printStackTrace();
-		    		System.exit(1);
-		    	}
+				Game.sleep(true, 100);
 			}
 		}
-		
-		this.setVisible(false);
-		
-		this.setContentPane(this.playPanel);
-		this.pack();
-
-	    this.setLocation(dim.width/2 - this.getWidth()/2, dim.height/2 - this.getHeight()/2);
-		
-		this.setVisible(true);
 	}
 	
 	public void createMenu() {
@@ -119,6 +120,10 @@ public class Window extends JFrame {
 	    this.addMenuButton(menuPanel, "Play", MenuState.Play);
 	    
 	    menuPanel.add(Box.createVerticalGlue());
+	    
+	    this.addMenuButton(menuPanel, "AI comparison", MenuState.PlayAI);
+		
+		menuPanel.add(Box.createVerticalGlue());
 		
 		this.addMenuButton(menuPanel, "Rules", MenuState.Rules);
 		
@@ -166,6 +171,30 @@ public class Window extends JFrame {
 		
 		this.board = board;
 		this.playPanel = playPanel;
+	}
+	
+	private void dispMenu() {
+		this.setVisible(false);
+		
+		this.setContentPane(this.menuPanel);
+		this.setSize(300, 400);
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	    this.setLocation(dim.width/2 - this.getWidth()/2, dim.height/2 - this.getHeight()/2);
+		
+		this.setVisible(true);
+	}
+	
+	private void dispBoard() {
+		this.setVisible(false);
+		
+		this.setContentPane(this.playPanel);
+		this.pack();
+
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	    this.setLocation(dim.width/2 - this.getWidth()/2, dim.height/2 - this.getHeight()/2);
+		
+		this.setVisible(true);
 	}
 	
 	private void dispRules() {

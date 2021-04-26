@@ -11,26 +11,23 @@ public class Game {
 	public static Color SW_COLOR = Color.CYAN;
 	public static Color SE_COLOR = Color.GREEN;
 	public static Color NE_COLOR = Color.RED;
+	public static Color[] PLAYER_COLORS = {Game.NW_COLOR, Game.SW_COLOR, Game.SE_COLOR, Game.NE_COLOR};
+	
+	// This constant defines the number of AI games to be played when comparing two
+	public static int NB_AI_GAMES = 10000;
 	
 	// The player types represented as indexes (because they are coming straight from comboBoxes)
 	// Needs to be static because it's used directly by action listeners
-	private static PlayerType[] playerTypes = {
-		PlayerType.HumanPlayer,
-		PlayerType.HumanPlayer,
-		PlayerType.HumanPlayer,
-		PlayerType.HumanPlayer
-	};
+	private static HashMap<Color, PlayerType> playerTypes = new HashMap<Color, PlayerType>();
 	
 	private static JLabel infoText;
 	
-	LinkedHashMap<Color, Player> players = new LinkedHashMap<Color, Player>();
+	private LinkedHashMap<Color, Player> players = new LinkedHashMap<Color, Player>();
 	private Dice dice;
 	
 	Game(Window window) {
 		Board board = window.getBoard();
 		Game.infoText = window.getInfoText();
-		
-		Color[] playerColors = {Game.NW_COLOR, Game.SW_COLOR, Game.SE_COLOR, Game.NE_COLOR};
 		
 		// This class is basically a struct only used for the board creation
 		class SquareInitData {
@@ -69,10 +66,10 @@ public class Game {
 		};
 		
 		HashMap<Color, Direction> arrowDirs = new HashMap<Color, Direction>();
-		arrowDirs.put(playerColors[0], Direction.East);
-		arrowDirs.put(playerColors[1], Direction.North);
-		arrowDirs.put(playerColors[2], Direction.West);
-		arrowDirs.put(playerColors[3], Direction.South);
+		arrowDirs.put(Game.PLAYER_COLORS[0], Direction.East);
+		arrowDirs.put(Game.PLAYER_COLORS[1], Direction.North);
+		arrowDirs.put(Game.PLAYER_COLORS[2], Direction.West);
+		arrowDirs.put(Game.PLAYER_COLORS[3], Direction.South);
 		
 		// This firstSquare variable is used later on to close the loop
 		boolean isFirstSquare = true;
@@ -81,7 +78,10 @@ public class Game {
 		// Build the board
 		Square nextSquare = null;
 		
-		for(Color color: playerColors) {
+		for(Color color: Game.PLAYER_COLORS) {
+			// Initialize players to full human
+			Game.playerTypes.put(color, PlayerType.HumanPlayer);
+			
 			for(SquareInitData pathData: path) {				
 				// Create the next square in counterclockwise order
 				if (pathData.type == SquareType.Fork) {
@@ -148,7 +148,7 @@ public class Game {
 		};
 		
 		for(int i = 0; i<8; i+=2) {
-			players.get(playerColors[i/2]).setButton(board.addSkip(coordinates[i], coordinates[i+1]));
+			players.get(Game.PLAYER_COLORS[i/2]).setButton(board.addSkip(coordinates[i], coordinates[i+1]));
 		}
 		
 		// Create the dice and its displays
@@ -165,65 +165,64 @@ public class Game {
 		return newPos;
 	}
 
-	private void playerTurn(Player p) {
+	private void playerTurn(boolean showBoard, Player p) {
 		int diceResult;
 		int consecutiveTurns=1;
 		
 		do {
 			diceResult = this.dice.roll();
-			this.dice.hideDices();
-			this.dice.dispFace(p, p instanceof HumanPlayer);
+			this.dice.hideDices(showBoard);
+			this.dice.dispFace(showBoard, p, p instanceof HumanPlayer);
 			
 			if (diceResult == 6 && consecutiveTurns == 3) { break; }
 			
-			p.turn(diceResult);
+			p.turn(showBoard, diceResult);
 						
 			consecutiveTurns++;
 		} while (diceResult == 6 && consecutiveTurns < 4);
 	}
 	
 	// Returns the list of player colors from winner to loser
-	public ArrayList<Color> play() {
+	public ArrayList<Color> play(boolean showBoard) {
 		List<Color> turnOrder = new ArrayList<Color>(Arrays.asList(
 			Game.NE_COLOR, Game.SE_COLOR, Game.SW_COLOR, Game.NW_COLOR
-		)); 
+		));
 		ArrayList<Color> winOrder = new ArrayList<Color>();
 		
-		Color currentColor = this.startingPlayer(turnOrder); 
+		Color currentColor = this.startingPlayer(showBoard, turnOrder); 
 		while (turnOrder.size() > 1) {
-			this.playerTurn(this.players.get(currentColor));
+			this.playerTurn(showBoard, this.players.get(currentColor));
 			
 			if (this.players.get(currentColor).hasWon()){
 				turnOrder.remove(currentColor);
 				winOrder.add(currentColor);
 				
-				dice.changeToMedal(currentColor, 4-turnOrder.size());
+				if (showBoard) {					
+					dice.changeToMedal(currentColor, 4-turnOrder.size());
+				}
 			}
 			
 			currentColor = turnOrder.get((turnOrder.indexOf(currentColor) + 1) % turnOrder.size());
 		}
 		
 		// Display the winner and wait for the user to see
-		Game.setInfoText(this.players.get(winOrder.get(0)).getColoredType() + " won, congrats! The game is over!");
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		Game.setInfoText(showBoard, this.players.get(winOrder.get(0)).getColoredType() + " won, congrats! The game is over!");
+		Game.sleep(showBoard, 3000);
 		
 		// Reset the game to its initial state
 		
-		this.dice.reset();
+		if (showBoard) {
+			this.dice.reset();
+		}
 		
 		for(Player player: this.players.values()) {
-			player.reset();
+			player.reset(showBoard);
 		}
 		
 		return winOrder;
 	}
 
-	public Color startingPlayer(List<Color> playerColors) {
+	public Color startingPlayer(boolean showBoard, List<Color> playerColors) {
 		LinkedHashMap<Color, Integer> colorsWithThrow = new LinkedHashMap<Color, Integer>();
 		
 		// Initialization of the colors in the hashmap is needed
@@ -231,19 +230,14 @@ public class Game {
 			colorsWithThrow.put(color, null);
 		}
 		
-		Game.setInfoText("Selection of the first player...");
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		Game.setInfoText(showBoard, "Selection of the first player...");
+		Game.sleep(showBoard, 1000);
 		
 		while (colorsWithThrow.size() != 1) {
 			// Have the remaining players throw their dices
 			for(Color color: colorsWithThrow.keySet()) {
 				colorsWithThrow.put(color, this.dice.roll());
-				this.dice.dispFace(this.players.get(color), true);
+				this.dice.dispFace(showBoard, this.players.get(color), true);
 			}
 			
 			// Get the biggest throw value
@@ -261,31 +255,41 @@ public class Game {
 			}
 			
 			// Add some wait time for the user to see who has the highest throw
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
+			Game.sleep(showBoard, 2000);
 			
 			// Hide all dices
-			this.dice.hideDices();
+			this.dice.hideDices(showBoard);
 		}
 		
 		// Return the first player's color
 		return colorsWithThrow.keySet().iterator().next();
 	}
 	
-	public static void setPlayerTypeAt(int index, PlayerType type) {
-		Game.playerTypes[index] = type;
+	public Player getPlayer(Color playerColor) {
+		return this.players.get(playerColor);
 	}
 	
-	public static PlayerType getPlayerTypeAt(int index) {
-		return Game.playerTypes[index];
+	public static void setPlayerType(Color playerColor, PlayerType type) {
+		Game.playerTypes.put(playerColor, type);
 	}
 	
-	public static void setInfoText(String text) {
-		Game.infoText.setText("<html>" + text + "</html>");
+	public static PlayerType getPlayerType(Color playerColor) {
+		return Game.playerTypes.get(playerColor);
+	}
+	
+	public void updatePlayerTypes() {
+		for(Player player: this.players.values()) {
+			this.players.put(
+				player.getColor(), 
+				Game.playerTypes.get(player.getColor()).turnPlayerInto(player)
+			);
+		}
+	}
+	
+	public static void setInfoText(boolean showBoard, String text) {
+		if (showBoard) {
+			Game.infoText.setText("<html>" + text + "</html>");
+		}
 	}
 	
 	// Only works if the text is displayed in a container that supports HTML
@@ -297,25 +301,24 @@ public class Game {
 		
 		return "<span style=\"color:" + rgbString + ";\">" + text + "</span>";
 	}
+	
+	public static void sleep(boolean showBoard, long milli) {
+		if (showBoard) {			
+			try {
+				Thread.sleep(milli);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+		}
+	}
 
 	public static void main(String[] args) {
 		Window window = new Window();
 		Game game = new Game(window);
 		
-		// Enter the menu and play games until the user decides to quit
-		while (true) {
-			// Go into menu loop until a game starts
-			window.menuLoop();
-			
-			// Update player types
-			int i = 0;
-			for(Player player: game.players.values()) {
-				game.players.put(player.getColor(), Game.playerTypes[i].turnPlayerInto(player));
-				i++;
-			}
-			
-			game.play();
-		}
+		// Go into menu loop until the user decides to quit
+		window.menuLoop(game);
 	}
 
 }

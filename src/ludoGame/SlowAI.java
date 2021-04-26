@@ -13,9 +13,13 @@ public class SlowAI extends Player {
 		super(oldPlayer, PlayerType.SlowAI);
 	}
 	
-	protected Token chooseToken(HashMap<Token, Square> playableTokens) {
+	protected Token chooseToken(boolean showBoard, HashMap<Token, Square> playableTokens) {
 		Token chosenToken = null;
-		if (!playableTokens.isEmpty()) {
+		if (playableTokens.size() == 1) {
+			// If there is a single token, play it (this avoids some useless computations)
+			chosenToken = (Token) playableTokens.keySet().toArray()[0];
+		}
+		else if (!playableTokens.isEmpty()) {
 			// Sort tokens by distance from lowest to greatest
 			Token[] sortedTokens = playableTokens.keySet().toArray(new Token[0]);
 			Arrays.sort(sortedTokens, Comparator.comparingInt(tok -> ((Token) tok).getDistance()));
@@ -34,12 +38,7 @@ public class SlowAI extends Player {
 			chosenToken = tokensWithMinDistance.get(generator.nextInt(i));
 		}
 		
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+		Game.sleep(showBoard, 500);
 		
 		return chosenToken;
 	}
