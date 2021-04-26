@@ -53,6 +53,7 @@ public class ResultDialog extends JDialog {
 		this.setVisible(true);
 	}
 	
+	// Add simple label with text to the grid layout
 	private void addResultLabel(int row, String text) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -69,11 +70,13 @@ public class ResultDialog extends JDialog {
 		this.getContentPane().add(resultLabel, c);
 	}
 	
+	// Updates the number of games done currently shown to the user
 	public void setGamesDone(int gamesDone) {
 		this.resultLabels.get(5).setText("Please wait (" + gamesDone 
 			+ " / " + Game.NB_AI_GAMES + " games done)");
 	}
 	
+	// Once the games are over, uses the results <playerWins> to display a nice summary
 	public void showResults(Game game, HashMap<Color, Integer> playerWins, int nbOfGames) {
 		this.continueButton.setVisible(true);
 		

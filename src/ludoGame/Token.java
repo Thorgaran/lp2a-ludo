@@ -71,6 +71,7 @@ public class Token extends JPanel implements MouseListener {
 		this.distance = distance;
 	}
 	
+	// Called when the token actually moves, since maybeDistance is ignored when the token doesn't move
 	public void commitDistance() {
 		this.distance = this.maybeDistance;
 	}
@@ -175,6 +176,7 @@ public class Token extends JPanel implements MouseListener {
 		return toReturn;
 	}
 	
+	// Moves this token to another square
 	public void move(Square dest) {
 		this.setTokHeight(dest.getTokens().size());
 		

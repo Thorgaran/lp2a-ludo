@@ -64,6 +64,7 @@ public class ForkSquare extends Square {
 		return this.goalRowLocked;
 	}
 	
+	// Return an int that is one unit further from the number seven
 	private int getFurtherFromSeven(int n) {
 		if (n == 7) {
 			return 7;

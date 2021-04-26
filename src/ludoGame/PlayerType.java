@@ -31,6 +31,7 @@ public enum PlayerType {
 		}
 	}
 	
+	// Returns a list of all the enum variants called with .toString()
 	public static String[] getTypeList() {
 		ArrayList<String> typeList = new ArrayList<String>();
 		
@@ -42,6 +43,7 @@ public enum PlayerType {
 		return typeList.toArray(new String[0]);
 	}
 	
+	// Conversion between comboBox index and PlayerType
 	public static PlayerType indexToType(int index) {
 		switch (index) {
 		case 0:
@@ -63,6 +65,7 @@ public enum PlayerType {
 		}
 	}
 	
+	// Conversion into comboBox index
 	public int toIndex() {
 		switch (this) {
 		case RandomAI:
@@ -84,6 +87,7 @@ public enum PlayerType {
 		}
 	}
 	
+	// Takes a player and returns a derived inherited player
 	public Player turnPlayerInto(Player player) {
 		switch (this) {
 		case RandomAI:

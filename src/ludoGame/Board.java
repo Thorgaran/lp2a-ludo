@@ -33,6 +33,7 @@ public class Board extends JPanel {
 		this.setLayout(new GridBagLayout());
 	}
 	
+	// Add square to be displayed on the board grid
 	public void addSquare(Square square) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -68,12 +69,12 @@ public class Board extends JPanel {
 		this.add(skip, c);
 		return skip;
 	}
-		
-	  public void paintComponent(Graphics g) {
-		    // Propagate painting chain (see https://www.oracle.com/java/technologies/painting.html)
-		    super.paintComponent(g);
-		    Graphics2D g2d = (Graphics2D) g;
-		    
-		    g2d.drawImage(backgroundImage,0,0,this); 
-		}
+	
+	public void paintComponent(Graphics g) {
+	    // Propagate painting chain (see https://www.oracle.com/java/technologies/painting.html)
+	    super.paintComponent(g);
+	    Graphics2D g2d = (Graphics2D) g;
+	    
+	    g2d.drawImage(backgroundImage,0,0,this); 
+	}
 }

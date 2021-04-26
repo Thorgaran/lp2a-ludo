@@ -54,6 +54,7 @@ public class Dice {
 		}
 	}
 	
+	// Give a random value to the dice
 	public int roll() {
 		// Get a random int between 1 and 6
 		this.number = ThreadLocalRandom.current().nextInt(1, 7);
@@ -61,6 +62,7 @@ public class Dice {
 		return this.number;
 	}
 	
+	// Hide all visible dices among the 4 JLabels at the players' homes
 	public void hideDices(boolean showBoard) {
 		if (showBoard) {			
 			// Hide the currently visible dices
@@ -72,6 +74,7 @@ public class Dice {
 		}
 	}
 	
+	// Show the current dice value to the user and eventually show a dice roll animation
 	public void dispFace(boolean showBoard, Player player, boolean showAnimation) {
 		if (showBoard) {
 			Color playerColor = player.getColor();
@@ -125,6 +128,7 @@ public class Dice {
 		medal.repaint();
 	}
 	
+	// Reset the dice to a pre-game state
 	public void reset() {
 		// Put the medals back in diceDisplay
 		this.dispDices.putAll(this.dispMedals);

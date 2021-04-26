@@ -51,6 +51,7 @@ public class PlayerTypeDialog extends JDialog {
 		this.setVisible(true);
 	}
 	
+	// Add a line displaying a color and a player type selection drop-down list
 	private void addPlayerLine(Color color, boolean removeHumans) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;

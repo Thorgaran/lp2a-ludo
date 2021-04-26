@@ -164,7 +164,8 @@ public class Game {
 		
 		return newPos;
 	}
-
+	
+	// Full player turn, may include multiple player moves if the player rolls a six
 	private void playerTurn(boolean showBoard, Player p) {
 		int diceResult;
 		int consecutiveTurns=1;
@@ -221,7 +222,8 @@ public class Game {
 		
 		return winOrder;
 	}
-
+	
+	// Gets a random starting player following the real-life algorithm
 	public Color startingPlayer(boolean showBoard, List<Color> playerColors) {
 		LinkedHashMap<Color, Integer> colorsWithThrow = new LinkedHashMap<Color, Integer>();
 		
@@ -277,6 +279,7 @@ public class Game {
 		return Game.playerTypes.get(playerColor);
 	}
 	
+	// Transforms each player object into the new inherited type depending on Game.playerTypes
 	public void updatePlayerTypes() {
 		for(Player player: this.players.values()) {
 			this.players.put(
@@ -286,6 +289,7 @@ public class Game {
 		}
 	}
 	
+	// Sets the text to be displayed at the top of the board during a game
 	public static void setInfoText(boolean showBoard, String text) {
 		if (showBoard) {
 			Game.infoText.setText("<html>" + text + "</html>");
@@ -302,6 +306,7 @@ public class Game {
 		return "<span style=\"color:" + rgbString + ";\">" + text + "</span>";
 	}
 	
+	// Simple wrapper around Thread.sleep()
 	public static void sleep(boolean showBoard, long milli) {
 		if (showBoard) {			
 			try {
@@ -312,7 +317,8 @@ public class Game {
 			}
 		}
 	}
-
+	
+	// The main method, entry point of the whole program
 	public static void main(String[] args) {
 		Window window = new Window();
 		Game game = new Game(window);

@@ -52,6 +52,7 @@ public abstract class Player {
 		return this.homeSquares;
 	}
 	
+	// Returns an empty home square. Will crash the program if it can't find one
 	public Square getEmptyHomeSquare() {
 		for (Square square : this.homeSquares) {
 			if (square.getTokens().size() == 0) {
@@ -59,9 +60,11 @@ public abstract class Player {
 			}
 		}
 		System.out.println("No home square empty!");
+		System.exit(1);
 		return null;
 	}
 	
+	// Returns the corresponding starting square for the player
 	public Square getStartSquare() {
 		return this.homeSquares.get(0).getNextSquare();
 	}
@@ -78,12 +81,15 @@ public abstract class Player {
 		return this.hasEaten;
 	}
 	
+	// Returns a String representing the player type, with html coloration information
 	public String getColoredType() {
 		return Game.dyeText(this.type.toString(), this.color.darker());
 	}
 	
+	// Takes a list of valid tokens and returns one of them (the one that the player wants to move)
 	abstract protected Token chooseToken(boolean showBoard, HashMap<Token, Square> playableTokens);
 	
+	// Handles the full logic for a player turn for the current value of the dice
 	public void turn(boolean showBoard, int diceResult) {
 		HashMap<Token, Square> playableTokens = new HashMap<Token, Square>();
 		
@@ -157,6 +163,7 @@ public abstract class Player {
 		}
 	}
 	
+	// Returns true if the player reached the goal with its 4 tokens
 	public boolean hasWon() {
 		boolean hasWon = true;
 		for(Token t: this.tokens) {
@@ -168,6 +175,7 @@ public abstract class Player {
 		return hasWon;
 	}
 	
+	// Resets the player to its pre-game state
 	public void reset(boolean showBoard) {
 		// Move tokens back to their homes
 		for(Token token: this.getTokens()) {

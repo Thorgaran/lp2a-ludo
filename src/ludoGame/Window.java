@@ -27,11 +27,13 @@ public class Window extends JFrame {
 		return this.board;
 	}
 	
+	// Returns the info text JLabel
 	public JLabel getInfoText() {
 		// We know the first component is a JLabel, thus we can cast it
 		return (JLabel) this.playPanel.getComponent(0);
 	}
 	
+	// Main loop of the program, will only be exited once the user quits the game
 	public void menuLoop(Game game) {
 		// Display menu
 		this.dispMenu();
@@ -108,6 +110,7 @@ public class Window extends JFrame {
 		}
 	}
 	
+	// Places components to make the menu on a JPanel and returns it
 	public void createMenu() {
 		JPanel menuPanel = new JPanel();
 		
@@ -136,6 +139,7 @@ public class Window extends JFrame {
 	    this.menuPanel = menuPanel;
 	}
 	
+	// Add single button to the menu
 	private void addMenuButton(JPanel menuPanel, String buttonLabel, MenuState resultingMenuState) {		
 		JButton menuButton = new JButton(buttonLabel);
 		menuButton.setAlignmentX(CENTER_ALIGNMENT);
@@ -156,6 +160,7 @@ public class Window extends JFrame {
 	    });
 	}
 	
+	// Places components to make the board on a JPanel and returns it
 	private void createBoard() {
 		JPanel playPanel = new JPanel();
 		playPanel.setLayout(new BoxLayout(playPanel, BoxLayout.PAGE_AXIS));
@@ -173,6 +178,7 @@ public class Window extends JFrame {
 		this.playPanel = playPanel;
 	}
 	
+	// When the window is currently displaying the board, this is used to quickly switch to the menu
 	private void dispMenu() {
 		this.setVisible(false);
 		
@@ -185,6 +191,7 @@ public class Window extends JFrame {
 		this.setVisible(true);
 	}
 	
+	// When the window is currently displaying the menu, this is used to quickly switch to the board
 	private void dispBoard() {
 		this.setVisible(false);
 		
@@ -197,6 +204,7 @@ public class Window extends JFrame {
 		this.setVisible(true);
 	}
 	
+	// Opens a pop-up window displaying the Ludo rules
 	private void dispRules() {
 		JDialog rulesDialog = new JDialog(this, "Rules", true);
 		rulesDialog.setResizable(false);

@@ -45,11 +45,13 @@ public class Square extends JPanel {
 		this.nextSquare = nextSquare;
 	}
 	
+	// Add a token both to the internal token list (game engine) and components list (GUI)
 	public void addToken(Token token) {
 		this.tokens.add(token);
 		this.add(token, 0);
 	}
 	
+	// Removes a token both from the internal token list (game engine) and components list (GUI)
 	public void removeToken(Token token) {
 		this.tokens.remove(token);
 		this.remove(token);
@@ -59,6 +61,7 @@ public class Square extends JPanel {
 		return this.tokens;
 	}
 	
+	// Returns the number of tokens currently present on the square
 	public int nbTokens() {
 		return this.tokens.size();
 	}
@@ -144,6 +147,7 @@ public class Square extends JPanel {
 		return newCoords;
 	}
 	
+	// Returns an AWT shape in the form of an arrow pointing towards arrowDir
 	private Shape createArrow(Direction arrowDir) {
 		// Coordinates for a south-aiming arrow
 		int[] coords = {
