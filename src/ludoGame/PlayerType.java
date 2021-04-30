@@ -8,7 +8,8 @@ public enum PlayerType {
 	SlowAI,
 	AggressiveAI,
 	SmartAI,
-	HumanPlayer;
+	HumanPlayer,
+	RemotePlayer;
 	
 	public String toString() {
 		switch (this) {
@@ -24,6 +25,8 @@ public enum PlayerType {
 			return "Smart AI";
 		case HumanPlayer:
 			return "Human Player";
+		case RemotePlayer:
+			return "Remote Player";
 		default:
 			System.out.println("Invalid player type");
 			System.exit(1);
@@ -31,12 +34,14 @@ public enum PlayerType {
 		}
 	}
 	
-	// Returns a list of all the enum variants called with .toString()
+	// Returns a list of all the enum variants besides "RemotePlayer" called with .toString()
 	public static String[] getTypeList() {
 		ArrayList<String> typeList = new ArrayList<String>();
 		
 		for(PlayerType playerType: PlayerType.values()) {
-			typeList.add(playerType.toString());
+			if (playerType != PlayerType.RemotePlayer) {
+				typeList.add(playerType.toString());
+			}
 		}
 		
 		// Transform the ArrayList to a String array
@@ -58,6 +63,8 @@ public enum PlayerType {
 			return PlayerType.SmartAI;
 		case 5:
 			return PlayerType.HumanPlayer;
+		case 6:
+			return PlayerType.RemotePlayer;
 		default:
 			System.out.println("Invalid type index");
 			System.exit(1);
@@ -80,6 +87,8 @@ public enum PlayerType {
 			return 4;
 		case HumanPlayer:
 			return 5;
+		case RemotePlayer:
+			return 6;
 		default:
 			System.out.println("Invalid player type");
 			System.exit(1);
@@ -102,6 +111,8 @@ public enum PlayerType {
 			return new SmartAI(player);
 		case HumanPlayer:
 			return new HumanPlayer(player);
+		case RemotePlayer:
+			return new RemotePlayer(player);
 		default:
 			System.out.println("Invalid player type");
 			System.exit(1);

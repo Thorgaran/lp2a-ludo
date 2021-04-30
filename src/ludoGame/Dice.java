@@ -4,6 +4,9 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.*;
+
+import com.therolf.miniServer.MessageType;
+
 import java.awt.*;
 
 public class Dice {
@@ -52,6 +55,16 @@ public class Dice {
 	        board.add(dispDice, c);
 			this.dispDices.put(player.getColor(), dispDice);
 		}
+	}
+	
+	// Get the random roll value from the server
+	public int serverRoll() {
+		// Get a random int between 1 and 6 from the server, as a string
+		String numberStr = Game.getClient().expect(MessageType.DiceRoll);
+		
+		this.number = Integer.valueOf(numberStr);
+		
+		return this.number;
 	}
 	
 	// Give a random value to the dice

@@ -41,6 +41,10 @@ public abstract class Player {
 		}
 	}
 	
+	public PlayerType getType() {
+		return this.type;
+	}
+	
 	public JButton getButton() {
 		return this.button;
 	}

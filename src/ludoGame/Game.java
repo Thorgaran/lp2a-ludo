@@ -5,6 +5,9 @@ import java.util.*;
 
 import javax.swing.JLabel;
 
+import com.therolf.miniServer.Client;
+import com.therolf.miniServer.MessageType;
+
 public class Game {
 	// Define game colors only once here, from north west to north east
 	public static Color NW_COLOR = new Color(255, 245, 0);
@@ -21,6 +24,8 @@ public class Game {
 	private static HashMap<Color, PlayerType> playerTypes = new HashMap<Color, PlayerType>();
 	
 	private static JLabel infoText;
+	
+	private static Client client = null;
 	
 	private LinkedHashMap<Color, Player> players = new LinkedHashMap<Color, Player>();
 	private Dice dice;
@@ -171,9 +176,22 @@ public class Game {
 		int consecutiveTurns=1;
 		
 		do {
-			diceResult = this.dice.roll();
+			if (Game.isMultiplayer() ) {
+				if (p.getType() == PlayerType.HumanPlayer) {
+					// If the player throwing is the local human player, send request for dice roll
+					// (this check is needed to avoid multiple dice roll requests at the same time)
+					Game.getClient().send(MessageType.AskRoll);
+				}
+
+				diceResult = this.dice.serverRoll();
+			}
+			else {
+				diceResult = this.dice.roll();
+			}
+			
 			this.dice.hideDices(showBoard);
-			this.dice.dispFace(showBoard, p, p instanceof HumanPlayer);
+			this.dice.dispFace(showBoard, p, 
+				p.getType() == PlayerType.HumanPlayer || p.getType() == PlayerType.RemotePlayer);
 			
 			if (diceResult == 6 && consecutiveTurns == 3) { break; }
 			
@@ -238,7 +256,18 @@ public class Game {
 		while (colorsWithThrow.size() != 1) {
 			// Have the remaining players throw their dices
 			for(Color color: colorsWithThrow.keySet()) {
-				colorsWithThrow.put(color, this.dice.roll());
+				if (Game.isMultiplayer()) {
+					if (this.players.get(color).getType() == PlayerType.HumanPlayer) {
+						// If the player throwing is the local human player, send request for dice roll
+						// (this check is needed to avoid multiple dice roll requests at the same time)
+						Game.getClient().send(MessageType.AskRoll);
+					}
+					colorsWithThrow.put(color, this.dice.serverRoll());
+				}
+				else {
+					colorsWithThrow.put(color, this.dice.roll());
+				}
+				
 				this.dice.dispFace(showBoard, this.players.get(color), true);
 			}
 			
@@ -265,6 +294,14 @@ public class Game {
 		
 		// Return the first player's color
 		return colorsWithThrow.keySet().iterator().next();
+	}
+	
+	public static Client getClient() {
+		return Game.client;
+	}
+	
+	public static void setClient(Client client) {
+		Game.client = client;
 	}
 	
 	public Player getPlayer(Color playerColor) {
@@ -294,6 +331,10 @@ public class Game {
 		if (showBoard) {
 			Game.infoText.setText("<html>" + text + "</html>");
 		}
+	}
+	
+	public static boolean isMultiplayer() {
+		return Game.client != null;
 	}
 	
 	// Only works if the text is displayed in a container that supports HTML
@@ -326,5 +367,4 @@ public class Game {
 		// Go into menu loop until the user decides to quit
 		window.menuLoop(game);
 	}
-
 }

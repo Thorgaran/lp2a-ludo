@@ -2,9 +2,16 @@ package ludoGame;
 
 import javax.swing.*;
 
+import com.therolf.miniServer.Client;
+import com.therolf.miniServer.Message;
+import com.therolf.miniServer.MessageType;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.net.ConnectException;
 import java.util.HashMap;
+import java.util.Scanner;
 
 @SuppressWarnings("serial")
 public class Window extends JFrame {
@@ -38,6 +45,7 @@ public class Window extends JFrame {
 		// Display menu
 		this.dispMenu();
 		
+		Window.menuState = MenuState.Multi;
 		// Start menu loop
 		while (true) {
 			switch (Window.menuState) {
@@ -53,6 +61,90 @@ public class Window extends JFrame {
 					
 					this.dispMenu();
 				}
+				
+				Window.menuState = MenuState.None;
+				break;
+			
+			case Multi:
+				String pseudo = "";
+				
+				String ip = "62.39.210.30";
+				int port = 2234;
+				
+				System.out.println("Trying to connect to " + ip + ":" + port);
+				
+				try {
+		            Client client = new Client(ip, port);
+		            Game.setClient(client);
+		            
+		            Scanner sc = new Scanner(System.in);
+		            System.out.println("Please Login with your pseudo: ");
+		            
+		            // Authentication
+		            while(!client.isAuthed() && sc.hasNextLine()) {
+		                pseudo = sc.nextLine();
+		                client.send(MessageType.Login, pseudo);
+		                
+		                Message serverResponse = client.read();
+		                if (serverResponse.getType() != MessageType.AuthSuccessful) {
+		                	System.out.println(serverResponse.getContents());
+		                }
+		            }
+		            sc.close();
+		            
+		            System.out.println("=== Successfully logged in as " + pseudo + " ===");
+		            
+		            // Get a free starting position from the server
+		            client.send(MessageType.AskPosition);
+		            String serverResponse = client.expect(MessageType.StartPosition);
+		            
+		            Color clientColor = null;
+		            switch (serverResponse) {
+		            case "NW":
+		            	clientColor = Game.NW_COLOR;
+		            	break;
+		            case "SW":
+		            	clientColor = Game.SW_COLOR;
+		            	break;
+		            case "NE":
+		            	clientColor = Game.NE_COLOR;
+		            	break;
+		            case "SE":
+		            	clientColor = Game.SE_COLOR;
+		            	break;
+		            default:
+		            	System.err.println("Error! Invalid starting position string!");
+		            	System.exit(1);
+		            }
+		            
+		            // Set player types accordingly
+		            for(Color color: Game.PLAYER_COLORS) {
+						Game.setPlayerType(color, PlayerType.RemotePlayer);
+					}
+		            Game.setPlayerType(clientColor, PlayerType.HumanPlayer);
+		            
+		            System.out.println("Now waiting...");
+		            
+		            // Now that the player types are settled, wait for all players to join
+		            client.expect(MessageType.GameStart);
+				}
+		        catch (ConnectException e) {
+		            System.err.println("Couldn't connect to " + ip + ":" + port);
+		            System.err.println(e.getMessage());
+		        }
+		        catch (IOException e) {
+		            e.printStackTrace();
+		        }
+				
+				
+				this.dispBoard();
+				
+				game.updatePlayerTypes();
+				
+				game.play(true);
+				
+				Game.getClient().send(MessageType.ShutDownCommand);
+				Game.setClient(null);
 				
 				Window.menuState = MenuState.None;
 				break;
