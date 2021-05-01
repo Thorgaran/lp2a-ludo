@@ -30,9 +30,9 @@ public class Game {
 	private LinkedHashMap<Color, Player> players = new LinkedHashMap<Color, Player>();
 	private Dice dice;
 	
-	Game(Window window) {
-		Board board = window.getBoard();
-		Game.infoText = window.getInfoText();
+	Game(Menu menu) {
+		Board board = menu.getBoard();
+		Game.infoText = menu.getInfoText();
 		
 		// This class is basically a struct only used for the board creation
 		class SquareInitData {
@@ -177,8 +177,8 @@ public class Game {
 		
 		do {
 			if (Game.isMultiplayer() ) {
-				if (p.getType() == PlayerType.HumanPlayer) {
-					// If the player throwing is the local human player, send request for dice roll
+				if (p.getType() != PlayerType.RemotePlayer) {
+					// If the player throwing isn't a remote player, send request for dice roll
 					// (this check is needed to avoid multiple dice roll requests at the same time)
 					Game.getClient().send(MessageType.AskRoll);
 				}
@@ -257,8 +257,8 @@ public class Game {
 			// Have the remaining players throw their dices
 			for(Color color: colorsWithThrow.keySet()) {
 				if (Game.isMultiplayer()) {
-					if (this.players.get(color).getType() == PlayerType.HumanPlayer) {
-						// If the player throwing is the local human player, send request for dice roll
+					if (this.players.get(color).getType() != PlayerType.RemotePlayer) {
+						// If the player throwing isn't a remote player, send request for dice roll
 						// (this check is needed to avoid multiple dice roll requests at the same time)
 						Game.getClient().send(MessageType.AskRoll);
 					}
@@ -357,14 +357,5 @@ public class Game {
 				System.exit(1);
 			}
 		}
-	}
-	
-	// The main method, entry point of the whole program
-	public static void main(String[] args) {
-		Window window = new Window();
-		Game game = new Game(window);
-		
-		// Go into menu loop until the user decides to quit
-		window.menuLoop(game);
 	}
 }

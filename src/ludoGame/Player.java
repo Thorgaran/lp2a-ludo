@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.util.*;
 import javax.swing.*;
 
+import com.therolf.miniServer.MessageType;
+
 public abstract class Player {
 	private PlayerType type;
 	
@@ -112,6 +114,20 @@ public abstract class Player {
 			Game.setInfoText(showBoard, this.getColoredType() + " must select a token");
 		}
 		Token chosenToken = this.chooseToken(showBoard, playableTokens);
+		
+		// If playing in multiplayer and the player isn't remote, send played token info to the server
+		if (Game.getClient() != null && this.type != PlayerType.RemotePlayer) {
+			String tokenIndexStr;
+			if (chosenToken == null) {
+				tokenIndexStr = "null";
+			}
+			else {
+				Integer tokenIndex = Arrays.asList(this.getTokens()).indexOf(chosenToken);
+				tokenIndexStr = tokenIndex.toString();
+			}
+			
+			Game.getClient().send(MessageType.Token, tokenIndexStr);
+		}
 		
 		if (chosenToken != null) {
 			Square startSquare = chosenToken.getPosition();

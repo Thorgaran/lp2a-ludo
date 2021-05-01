@@ -12,8 +12,8 @@ public class PlayerTypeDialog extends JDialog {
 	
 	private boolean startGame = false;
 	
-	PlayerTypeDialog(JFrame window, Color[] playerColors, boolean removeHumans) {
-		super(window, "Player selection", true);
+	PlayerTypeDialog(JFrame menu, Color[] playerColors, boolean removeHumans) {
+		super(menu, "Player selection", true);
 		
 		this.setResizable(false);
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);

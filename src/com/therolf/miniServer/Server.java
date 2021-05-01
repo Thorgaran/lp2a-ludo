@@ -8,7 +8,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Server {
     MessageListener messageListener;
@@ -134,14 +133,14 @@ public class Server {
         return clientProcessors.size();
     }
 
-    public String getAllPseudos() {
+    public ArrayList<String> getAllPseudos() {
         ArrayList<String> pseudos = new ArrayList<>();
         for(ClientProcessor gscp : clientProcessors) {
             if(gscp.getPseudo() != null) {
                 pseudos.add(gscp.getPseudo());
             }
         }
-        return Arrays.toString(pseudos.toArray(new String[0]));
+        return pseudos;
     }
 
     public void sendToEveryoneElse(String fromPseudo, MessageType type, String contents) {

@@ -3,8 +3,6 @@ package ludoGame;
 import java.awt.Color;
 import java.util.*;
 
-import com.therolf.miniServer.MessageType;
-
 public class HumanPlayer extends Player {
 	Token chosenToken;
 	
@@ -56,20 +54,6 @@ public class HumanPlayer extends Player {
 				token.setIsActive(false);
 				token.repaint();
 			}
-		}
-		
-		// If playing in multiplayer, send played token info to the server
-		if (Game.getClient() != null) {
-			String tokenIndexStr;
-			if (this.chosenToken == null) {
-				tokenIndexStr = "null";
-			}
-			else {
-				Integer tokenIndex = Arrays.asList(this.getTokens()).indexOf(this.chosenToken);
-				tokenIndexStr = tokenIndex.toString();
-			}
-			
-			Game.getClient().send(MessageType.Token, tokenIndexStr);
 		}
 		
 		return this.chosenToken;

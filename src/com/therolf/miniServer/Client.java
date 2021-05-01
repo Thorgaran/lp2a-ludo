@@ -26,11 +26,15 @@ public class Client {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> this.send(MessageType.ShutDownCommand)));
     }
     
+    public String getPseudo() {
+    	return this.pseudo;
+    }
+    
     public void send(MessageType type, String contents) {
         if(pw != null) {
-            // close server properly
+            // close client properly
             if (type == MessageType.ShutDownCommand) {
-                pw.println(contents);
+                pw.println(Message.toString(pseudo, type, contents));
                 pw.close();
             } else if (pseudo != null) {
                 pw.println(Message.toString(pseudo, type, contents));

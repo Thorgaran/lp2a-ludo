@@ -23,7 +23,7 @@ public class ServerExample {
         			miniServer.sendToEveryoneElse(fromPseudo, type, fromPseudo + " says hello");
         			break;
         		case "list":
-        			miniServer.sendFromTo(miniServer.getServerName(), fromPseudo, type, miniServer.getAllPseudos());
+        			miniServer.sendFromTo(miniServer.getServerName(), fromPseudo, type, miniServer.getAllPseudos().toString());
         			break;
         		case "ping":
         			miniServer.sendFromTo(miniServer.getServerName(), fromPseudo, type, "pong");

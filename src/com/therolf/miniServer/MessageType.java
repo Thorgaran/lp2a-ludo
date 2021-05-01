@@ -5,8 +5,8 @@ public enum MessageType {
 	Login,
 	AuthFailed,
 	AuthSuccessful,
-	AskPosition,
-	StartPosition,
+	JoinGame,
+	PlayerTypes,
 	GameStart,
 	AskRoll,
 	DiceRoll,
@@ -24,10 +24,10 @@ public enum MessageType {
 			return MessageType.AuthFailed;
 		case "AuthSuccessful":
 			return MessageType.AuthSuccessful;
-		case "AskPosition":
-			return MessageType.AskPosition;
-		case "StartPosition":
-			return MessageType.StartPosition;
+		case "JoinGame":
+			return MessageType.JoinGame;
+		case "PlayerTypes":
+			return MessageType.PlayerTypes;
 		case "GameStart":
 			return MessageType.GameStart;
 		case "AskRoll":

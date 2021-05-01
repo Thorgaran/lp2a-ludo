@@ -11,8 +11,8 @@ public class ResultDialog extends JDialog {
 	JButton continueButton;
 	ArrayList<JLabel> resultLabels = new ArrayList<JLabel>();
 	
-	ResultDialog(JFrame window) {
-		super(window, "AI results", false);
+	ResultDialog(JFrame menu) {
+		super(menu, "AI results", false);
 		
 		this.setResizable(false);
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);

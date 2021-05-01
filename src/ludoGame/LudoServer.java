@@ -3,13 +3,15 @@ package ludoGame;
 import com.therolf.miniServer.MessageType;
 import com.therolf.miniServer.Server;
 
+import java.awt.Color;
 import java.util.*;
 
 public class LudoServer {
 	private Random randGen = new Random();
 	
-	private ArrayList<String> positionsLeft = new ArrayList<String>(
-		Arrays.asList("NW", "SW", "NE", "SE"));
+	//private ArrayList<Color> colorsLeft = new ArrayList<Color>(Arrays.asList(Game.PLAYER_COLORS));
+	private ArrayList<Color> colorsLeft = new ArrayList<Color>(Arrays.asList(Game.SW_COLOR, Game.NE_COLOR));
+	private HashMap<Color, PlayerType> playerTypes = new HashMap<Color, PlayerType>();
 	
     public LudoServer() {
         String ip = null;        
@@ -23,21 +25,65 @@ public class LudoServer {
         if(sc.hasNextInt())
             port = sc.nextInt();
         
+        // TEMP ---------------------------------------------------------------------------
+        for (Color color: Game.PLAYER_COLORS) {
+        	this.playerTypes.put(color, PlayerType.SmartAI);
+        }
+        // --------------------------------------------------------------------------------
+        
         Server ludoServer = new Server(port, "LudoServer", ip);
         
         ludoServer.setMessageListener((fromPseudo, type, contents) -> {
             switch (type) {
-            case AskPosition:
-            	// Pop position from the available ones
-            	String position = this.positionsLeft.remove(
-            		this.randGen.nextInt(this.positionsLeft.size()));
+            case JoinGame:
+            	// Place Human player at random color
+            	Color randColor = this.colorsLeft.remove(this.randGen.nextInt(this.colorsLeft.size()));
+            	this.playerTypes.put(randColor, PlayerType.HumanPlayer);
             	
-            	// Send it to the client
-            	ludoServer.sendFromTo(ludoServer.getServerName(), fromPseudo, 
-            			MessageType.StartPosition, position);
+            	// Acknowledge join game request
+            	ludoServer.sendFromTo(ludoServer.getServerName(), fromPseudo, type, "");
             	
-            	// If 4 players got their positions and are ready to start
-            	if (this.positionsLeft.isEmpty()) {
+            	// If all humans got their positions and are ready to start
+            	if (this.colorsLeft.isEmpty()) {
+            		ArrayList<Color> humansSent = new ArrayList<Color>();
+            		boolean isFirstClient = true;
+            		for(String client: ludoServer.getAllPseudos()) {
+            			// Temporary copy of playerTypes
+            			@SuppressWarnings("unchecked")
+						HashMap<Color, PlayerType> clientPlayerTypes = (HashMap<Color, PlayerType>) this.playerTypes.clone();
+            			
+        				Boolean foundHuman = false;
+        				for (Color color: Game.PLAYER_COLORS) {
+        					if (this.playerTypes.get(color) == PlayerType.HumanPlayer
+        						&& !foundHuman && !humansSent.contains(color)
+        					) {
+    							foundHuman = true;
+    							humansSent.add(color);
+        					}
+        					else if (!isFirstClient || (isFirstClient && foundHuman && this.playerTypes.get(color) == PlayerType.HumanPlayer)) {
+        						// Remove AIs unless it's the first client (which will handle them)
+        						clientPlayerTypes.put(color, PlayerType.RemotePlayer);
+        					}
+        				}
+            			
+            			isFirstClient = false;
+            			
+            			// Turn types to string
+            			StringBuffer typesAsString = new StringBuffer("");
+            			for (Color color: Game.PLAYER_COLORS) {
+            				// Append type as index
+            				typesAsString.append(clientPlayerTypes.get(color).toIndex());
+
+        					// Append separator
+        					typesAsString.append(", ");
+            			}
+            			
+            			// Send types string
+            			ludoServer.sendFromTo(ludoServer.getServerName(), client, 
+            				MessageType.PlayerTypes, typesAsString.toString());
+                    }
+            		
+            		// Start game
             		ludoServer.sendToEveryone(ludoServer.getServerName(), MessageType.GameStart, "");
             	}
             	break;
@@ -59,20 +105,6 @@ public class LudoServer {
 				System.out.println("Received unexpected message type '" 
 					+ type.name() + "' from " + fromPseudo);
 				break;
-                
-            
-            	/*case "hello":
-                    miniServer.sendToEveryoneElse(fromPseudo, fromPseudo + " says hello");
-                    break;
-                case "list":
-                    miniServer.sendFromTo(miniServer.getServerName(), fromPseudo, miniServer.getAllPseudos());
-                    break;
-                case "ping":
-                    miniServer.sendFromTo(miniServer.getServerName(), fromPseudo, "pong");
-                    break;
-                default:
-                	ludoServer.sendToEveryone(fromPseudo, message);
-                    break;*/
             }
         });
         ludoServer.run();
